@@ -16,6 +16,8 @@ coverage
 logs
 *.log
 
+.idea
+
 # ngrok tunnel file
 config/tunnel.pid
 

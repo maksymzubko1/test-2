@@ -1,7 +1,6 @@
 import type { Session, HttpResponseError } from "@shopify/shopify-api";
 import type { Express, Request, Response, NextFunction } from "express";
 import type { ShopDataResponse } from "../../@types/shop";
-import mixpanel from "../lib/mixpanel";
 import shops from "../prisma/database/shops";
 import shopify from "../shopify";
 
@@ -54,13 +53,6 @@ async function updateShopData(app: Express, session: Session) {
       // notifications: [],
       // settings: { beta: betaUsers.includes(shop) ? true : false },
     });
-
-    // Track install event
-    mixpanel.track("App Install", {
-      shop: session.shop,
-      distinct_id: session.shop,
-      installCount: 1,
-    });
   } else {
     if (existingShop.shopData) {
       fetchShopData = false;
@@ -89,25 +81,12 @@ async function updateShopData(app: Express, session: Session) {
           },
         },
       });
-
-      // Track reinstall event
-      mixpanel.track("App ReInstall", {
-        shop: session.shop,
-        distinct_id: session.shop,
-        installCount: existingShop.installCount + 1,
-      });
     }
   }
 
   if (fetchShopData) {
     try {
       const client = new shopify.api.clients.Graphql({ session });
-
-      // Track reauth event
-      mixpanel.track("App ReAuth", {
-        shop: session.shop,
-        distinct_id: session.shop,
-      });
 
       const res = await client.query<ShopDataResponse>({ data: GET_SHOP_DATA });
 

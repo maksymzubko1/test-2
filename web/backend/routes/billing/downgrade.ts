@@ -2,7 +2,6 @@ import type { SubscriptionCancelResponse } from "../../../@types/billing";
 import type { Request, Response } from "express";
 import type { Session } from "@shopify/shopify-api";
 import { composeGid } from "@shopify/admin-graphql-api-utilities";
-import mixpanel from "../../lib/mixpanel";
 import shops from "../../prisma/database/shops";
 import shopify from "../../shopify";
 
@@ -84,17 +83,6 @@ export const downgrade = async (req: Request, res: Response) => {
       `Could not update subscription in the database for ${shop}`
     );
   }
-
-  mixpanel.track("Subscription deactivated", {
-    shop,
-    distinct_id: shop,
-    plan: shopData.subscription.plan,
-    active: shopData.subscription.active,
-    test: shopData.subscription.test,
-    trialDays: shopData.subscription.trialDays,
-    createdAt: shopData.subscription.createdAt,
-    chargeId: shopData.subscription.chargeId,
-  });
 
   console.log(
     `Event Downgrade: ${shopData.shop} downgraded to trial plan.`,

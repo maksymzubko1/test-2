@@ -1,4 +1,4 @@
-import type { Shop, ShopCreate, ShopUpdate } from "../../../@types/shop";
+import type { Shop, ShopCreate, ShopUpdate } from "../types";
 import prisma, { tryCatch } from "./client";
 
 export default {

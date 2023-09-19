@@ -80,7 +80,7 @@ const CREATE_PRODUCTS_MUTATION = `
   }
 `;
 
-export default async function productCreator(
+export async function productServices(
   session: Session,
   count = DEFAULT_PRODUCTS_COUNT
 ) {

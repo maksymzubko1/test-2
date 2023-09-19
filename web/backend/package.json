@@ -22,8 +22,6 @@
     "node": ">=16.0.0"
   },
   "dependencies": {
-    "@bugsnag/js": "^7.21.0",
-    "@bugsnag/plugin-express": "^7.19.0",
     "@prisma/client": "^5.3.1",
     "@shopify/admin-graphql-api-utilities": "^2.1.0",
     "@shopify/shopify-api": "^7.6.0",
@@ -31,7 +29,7 @@
     "compression": "^1.7.4",
     "cross-env": "^7.0.3",
     "express-static-gzip": "^2.1.7",
-    "mixpanel": "^0.17.0"
+    "express-validator": "^7.0.1"
   },
   "devDependencies": {
     "@types/compression": "^1.7.3",

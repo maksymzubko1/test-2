@@ -14,13 +14,13 @@ import GDPRWebhookHandlers from "./webhooks/gdpr";
 import addUninstallWebhookHandler from "./webhooks/uninstall";
 
 // Import Routes
-import bugsnag from "./lib/bugsnag.js";
 import billingRoutes, {
   billingUnauthenticatedRoutes,
 } from "./routes/billing/index";
 import blockRoutes from "./routes/blocks";
 import productRoutes from "./routes/products";
 import shopRoutes from "./routes/shop";
+import ordersRoutes from "./routes/orders";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "8081",
@@ -33,13 +33,6 @@ const STATIC_PATH =
     : `${process.cwd()}/../frontend/`;
 
 const app = express();
-const bs_middleware = bugsnag.getPlugin("express");
-
-// This must be the first piece of middleware in the stack.
-// It can only capture errors in downstream middleware
-if (bs_middleware?.requestHandler) {
-  app.use(bs_middleware.requestHandler);
-}
 
 // Set up Shopify authentication
 app.get(shopify.config.auth.path, shopify.auth.begin());
@@ -87,6 +80,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/block", blockRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/billing", billingRoutes);
+app.use("/api/orders", ordersRoutes);
 
 app.use(shopify.cspHeaders());
 app.use(
@@ -108,12 +102,6 @@ app.use("/*", shopify.ensureInstalledOnShop(), async (_req, res) => {
     .set("Content-Type", "text/html")
     .send(readFileSync(join(STATIC_PATH, "index.html")));
 });
-
-// This handles any errors that Express catches. This needs to go before other
-// error handlers. BugSnag will call the `next` error handler if it exists.
-if (bs_middleware?.errorHandler) {
-  app.use(bs_middleware.errorHandler);
-}
 
 app.listen(PORT);
 console.log(`App running on port: ${PORT} ...`);

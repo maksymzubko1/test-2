@@ -2,9 +2,7 @@ import { LATEST_API_VERSION, LogSeverity } from "@shopify/shopify-api";
 // import { BillingInterval } from "@shopify/shopify-api";
 import { shopifyApp } from "@shopify/shopify-app-express";
 import sessions from "./prisma/database/sessions";
-const { restResources } = await import(
-  `@shopify/shopify-api/rest/admin/${LATEST_API_VERSION}`
-);
+import { restResources } from "@shopify/shopify-api/rest/admin/2023-07";
 // If you want IntelliSense for the rest resources, you should import them directly
 // import { restResources } from "@shopify/shopify-api/rest/admin/2023-04";
 
