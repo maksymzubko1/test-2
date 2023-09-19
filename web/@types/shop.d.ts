@@ -1,4 +1,4 @@
-export * from "../backend/prisma/types";
+export * from "../server/prisma/types";
 
 export interface ShopData {
   id: string;

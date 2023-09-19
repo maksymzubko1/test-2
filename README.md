@@ -19,7 +19,7 @@ This is a template for building a [Shopify app] using Node and React with Typesc
 1. Clone the repo,
 
 ```sh
-npx degit SaeedYasin/shopify-app-template-node shopify-app-ts && npx degit SaeedYasin/shopify-frontend-template-react shopify-app-ts/web/frontend
+npx degit SaeedYasin/shopify-app-template-node shopify-app-ts && npx degit SaeedYasin/shopify-client-template-react shopify-app-ts/web/client
 ```
 
 2. Go to your app's directory and install packages.
@@ -35,7 +35,7 @@ cd shopify-app-ts && pnpm i
 5. You can remove the web/backend/prisma/migrations folder. Make sure your database schema is already created and then run,
 
 ```sh
-cd web/backend && npx prisma migrate dev
+cd web/server && npx prisma migrate dev
 ```
 
 6. Go to your app's directory and then run the app,
@@ -224,19 +224,19 @@ The frontend is a single page app. It requires the `SHOPIFY_API_KEY`, which you 
 Using yarn:
 
 ```shell
-cd web/frontend/ && SHOPIFY_API_KEY=REPLACE_ME yarn build
+cd web/client/ && SHOPIFY_API_KEY=REPLACE_ME yarn build
 ```
 
 Using npm:
 
 ```shell
-cd web/frontend/ && SHOPIFY_API_KEY=REPLACE_ME npm run build
+cd web/client/ && SHOPIFY_API_KEY=REPLACE_ME npm run build
 ```
 
 Using pnpm:
 
 ```shell
-cd web/frontend/ && SHOPIFY_API_KEY=REPLACE_ME pnpm run build
+cd web/client/ && SHOPIFY_API_KEY=REPLACE_ME pnpm run build
 ```
 
 You do not need to build the backend.

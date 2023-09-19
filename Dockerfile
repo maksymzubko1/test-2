@@ -13,15 +13,15 @@ ENV VITE_BS_TOKEN=$VITE_BS_TOKEN
 EXPOSE 8081
 WORKDIR /app
 COPY package.json package.json
-COPY web/frontend/package.json frontend/package.json
-COPY web/backend/package.json backend/package.json
-RUN npm --prefix ./frontend install
-RUN npm --prefix ./backend install
+COPY web/client/package.json frontend/package.json
+COPY web/server/package.json backend/package.json
+RUN npm --prefix ./client install
+RUN npm --prefix ./server install
 COPY web/@types @types
-COPY web/frontend frontend
-RUN npm --prefix ./frontend run build
-RUN npm --prefix ./frontend run upload
-COPY web/backend backend
-RUN npm --prefix ./backend run prepare
-RUN npm --prefix ./backend run build
+COPY web/client frontend
+RUN npm --prefix ./client run build
+RUN npm --prefix ./client run upload
+COPY web/server backend
+RUN npm --prefix ./server run prepare
+RUN npm --prefix ./server run build
 CMD cd backend && npm start
