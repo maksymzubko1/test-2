@@ -1,0 +1,25 @@
+{
+  "name": "shopify-template-node-typescript",
+  "author": "saeedyasin.com",
+  "version": "1.0.0",
+  "main": "web/backend/index.js",
+  "license": "UNLICENSED",
+  "scripts": {
+    "shopify": "shopify",
+    "build": "shopify app build",
+    "dev": "shopify app dev",
+    "predev": "pnpm version minor --no-git-tag-version",
+    "info": "shopify app info",
+    "generate": "shopify app generate",
+    "deploy": "shopify app deploy"
+  },
+  "dependencies": {
+    "@shopify/app": "^3.49.2",
+    "@shopify/cli": "^3.49.2"
+  },
+  "devDependencies": {
+    "@shopify/prettier-plugin-liquid": "^1.2.3",
+    "@total-typescript/ts-reset": "^0.4.2",
+    "prettier": "^2.8.8"
+  }
+}
