@@ -20,6 +20,8 @@
     "extends": "@shopify/stylelint-polaris"
   },
   "dependencies": {
+    "@bugsnag/js": "^7.21.0",
+    "@bugsnag/plugin-react": "^7.19.0",
     "@formatjs/intl-locale": "^3.3.4",
     "@formatjs/intl-localematcher": "^0.4.2",
     "@formatjs/intl-pluralrules": "^5.2.6",

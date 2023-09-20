@@ -13,23 +13,6 @@ async function* getFiles(dir) {
   }
 }
 
-function getVersion() {
-  const packageJson = fs.readFileSync("../package.json", "utf-8");
-  return `${JSON.parse(packageJson).version}`;
-}
-
-const uploadSrcMaps = async () => {
-  const version = getVersion();
-
-  await browser.uploadMultiple({
-    apiKey: `${process.env.VITE_BS_TOKEN}`,
-    appVersion: version,
-    baseUrl: `${process.env.VITE_HOST}/assets`,
-    directory: "dist/assets/",
-    overwrite: true,
-  });
-};
-
 const deleteSrcMaps = async () => {
   for await (const f of getFiles("dist/assets/")) {
     if (f.endsWith(".map") || f.endsWith(".map.br") || f.endsWith(".map.gz")) {

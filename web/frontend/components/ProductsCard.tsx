@@ -8,8 +8,6 @@ function useProductCount() {
   const fetch = useAuthenticatedFetch();
   return useQuery(["api", "products", "count"], async () => {
     const res = await fetch("/api/products/count");
-    const res2 = await fetch("/api/orders?take=10&sort=TOTAL_PRICE");
-    // console.log(await res2.json())
     if (!res.ok) {
       throw new Error(await res.text());
     }

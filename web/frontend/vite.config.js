@@ -24,7 +24,7 @@ if (
   !process.env.SHOPIFY_API_KEY
 ) {
   console.warn(
-    "\nBuilding the client app without an API key. The client build will not run without an API key. Set the SHOPIFY_API_KEY environment variable when running the build command.\n"
+    "\nBuilding the frontend app without an API key. The frontend build will not run without an API key. Set the SHOPIFY_API_KEY environment variable when running the build command.\n"
   );
 }
 

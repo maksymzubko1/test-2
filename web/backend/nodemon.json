@@ -1,6 +1,6 @@
 {
   "watch": ["./"],
-  "ignore": ["./frontend"],
+  "ignore": ["./client"],
   "ext": "ts,js,json",
   "exec": "node --loader ts-node/esm"
 }

@@ -1,4 +1,4 @@
-web/server/node_modules
+web/backend/node_modules
 web/frontend/node_modules
 web/frontend/dist
 node_modules
