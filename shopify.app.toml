@@ -2,7 +2,7 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://houston-tgp-agricultural-five.trycloudflare.com"
+application_url = "https://boost-chicago-pop-program.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -12,9 +12,9 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://houston-tgp-agricultural-five.trycloudflare.com/auth/callback",
-  "https://houston-tgp-agricultural-five.trycloudflare.com/auth/shopify/callback",
-  "https://houston-tgp-agricultural-five.trycloudflare.com/api/auth/callback"
+  "https://boost-chicago-pop-program.trycloudflare.com/auth/callback",
+  "https://boost-chicago-pop-program.trycloudflare.com/auth/shopify/callback",
+  "https://boost-chicago-pop-program.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

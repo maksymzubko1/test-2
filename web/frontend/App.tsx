@@ -11,14 +11,6 @@ import { ShopContextProvider } from "./hooks/index";
 import { AppBridgeProvider, PolarisProvider, QueryProvider } from "./providers";
 
 export default function App() {
-  // Any .tsx or .jsx files in /pages will become a route
-  // See documentation for <Routes /> for more info
-  const pages = import.meta.glob<Route>(
-    "./pages/**/!(*.test.[jt]sx)*.([jt]sx)",
-    {
-      eager: true,
-    }
-  );
   const { t } = useTranslation();
 
   return (
@@ -49,7 +41,7 @@ export default function App() {
                           },
                         ]}
                       />
-                      <Routes pages={pages} />
+                      <Routes />
                     </HelmetProvider>
                   </ShopContextProvider>
                 </QueryProvider>

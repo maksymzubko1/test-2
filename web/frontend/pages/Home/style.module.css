@@ -1,0 +1,72 @@
+.chart_container{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.chart_container div:first-child{
+    /*position: absolute;*/
+}
+
+.container{
+    padding: 0 20px;
+}
+
+.chart_buttons{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    border: 1px #24303E solid;
+    border-radius: 100px;
+    padding: 4px 8px;
+}
+
+.chart_buttons > span {
+    width: 28px;
+    height: 28px;
+    border-radius: 100px;
+    display: grid;
+    place-content: center;
+
+    cursor: pointer;
+}
+
+span svg {
+    z-index: 999;
+}
+
+.selector {
+    background: #24303E;
+    position: absolute;
+
+    transition: all .2s ease-in-out;
+
+    transform: translate(-60%, 0);
+}
+
+.first .selector {
+    transform: translate(-60%, 0);
+}
+
+.second .selector{
+    transform: translate(55%, 0);
+}
+
+.first span:nth-child(2) path{
+    transition-delay: .2s;
+    stroke: white;
+    fill: white;
+}
+
+.second span:nth-child(3) path{
+    transition-delay: .2s;
+    stroke: white;
+    fill: white;
+}
+
+table thead tr th{
+    font-weight: bold !important;
+}

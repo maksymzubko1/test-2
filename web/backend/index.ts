@@ -21,6 +21,7 @@ import blockRoutes from "./routes/blocks";
 import productRoutes from "./routes/products";
 import shopRoutes from "./routes/shop";
 import ordersRoutes from "./routes/orders";
+import graphqlRoute from "./routes/graphql";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "8081",
@@ -81,6 +82,7 @@ app.use("/api/block", blockRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/orders", ordersRoutes);
+app.use("/api/graphql", graphqlRoute);
 
 app.use(shopify.cspHeaders());
 app.use(
