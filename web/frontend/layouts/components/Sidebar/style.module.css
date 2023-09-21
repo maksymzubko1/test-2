@@ -1,0 +1,21 @@
+div[aria-details='nav-bar'] button div, div[aria-details='nav-bar'] button div span, div[aria-details='nav-bar'] button div span svg{
+    height: 30px;
+    width: 30px;
+}
+
+div[aria-details='nav-bar'] button span{
+    font-size: 18px;
+}
+
+div[aria-details='nav-bar'] button {
+    display: flex;
+    align-items: center;
+}
+
+div[aria-details='nav-bar'] {
+    height: 100%;
+}
+
+html {
+    overflow: hidden;
+}

@@ -35,10 +35,6 @@ export default function App() {
                             label: "Settings",
                             destination: "/settings",
                           },
-                          {
-                            label: t("NavigationMenu.pageName"),
-                            destination: "/pagename",
-                          },
                         ]}
                       />
                       <Routes />

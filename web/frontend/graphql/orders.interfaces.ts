@@ -8,9 +8,14 @@ export interface I_OrdersGetDto{
 }
 
 export enum E_STATUS {
-    ACTIVE = "ACTIVE",
-    ARCHIVED = "ARCHIVED",
-    DRAFT = "DRAFT"
+    PENDING = "pending",
+    AUTHORIZED = "authorized",
+    PARTIALLY_PAID = "partially_paid",
+    PARTIALLY_REFUNDED = "partially_refunded",
+    VOIDED = "voided",
+    PAID = "paid",
+    REFUNDED = "refunded",
+    EXPIRED = "expired",
 }
 
 export enum E_SORT {
@@ -18,3 +23,10 @@ export enum E_SORT {
     amount = "TOTAL_PRICE",
     subtotalLineItemsQuantity = "TOTAL_ITEMS_QUANTITY"
 }
+
+
+
+
+
+
+

@@ -2,6 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {NonEmptyArray} from "@shopify/polaris/build/ts/src/types";
 import {IndexTableHeading} from "@shopify/polaris/build/ts/src/components/IndexTable";
 import {
+    Box,
     ChoiceList, DatePicker,
     Frame, Grid,
     IndexFilters,
@@ -11,20 +12,22 @@ import {
     RangeSlider,
     TabProps,
     Text,
-    TextField,
+    TextField, Tooltip,
     useSetIndexFiltersMode
 } from "@shopify/polaris";
 import {Link} from "react-router-dom";
-import {I_OrdersGetDto} from "../../graphql/orders.interfaces";
+import {E_SORT, E_STATUS, I_OrdersGetDto} from "../../graphql/orders.interfaces";
 import cl from './style.module.css'
 import moment from "moment";
+import {FinancialStatus} from "../../components/FinancialStatus/FinancialStatus";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
     {title: "Order", alignment: "start"},
     {title: "Total Price", alignment: "center"},
     {title: "Items Count", alignment: "center"},
     {title: "Address", alignment: "start"},
-    {title: "Created Date", alignment: "center"}
+    {title: "Created Date", alignment: "center"},
+    {title: "Financial Status", alignment: "center"},
 ]
 
 function disambiguateLabel(key: string, value: string | any[]): string {
@@ -55,10 +58,43 @@ interface I_Props {
     onRequest: (options: I_OrdersGetDto) => void;
 }
 
+interface I_Storage {
+    filterName: string;
+    sortSelected: string[];
+    queryString: string;
+    selectedDates: {start: Date, end: Date} | undefined,
+    financialStatus: string;
+}
+
+const DEFAULT_ITEM = {filterName: 'All', queryString: '', financialStatus: '', selectedDates: undefined, sortSelected: [`${E_SORT.createdAt} asc`]} as I_Storage
+
+
 const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     const [itemStrings, setItemStrings] = useState([
         'All'
     ]);
+    const [storage, setStorage] = useState<I_Storage[]>([DEFAULT_ITEM])
+
+    useEffect(() => {
+        const _localStorage = localStorage.getItem('storageAppOrders');
+        if(!_localStorage)
+            localStorage.setItem('storageAppOrders', JSON.stringify([DEFAULT_ITEM]))
+        else
+        {
+            try{
+                const parsedStorage = JSON.parse(_localStorage) as I_Storage[];
+                setStorage(parsedStorage);
+            }
+            catch (err){
+                console.log(err)
+            }
+        }
+    }, []);
+
+    useEffect(() => {
+        setItemStrings(storage.map(s=>s.filterName))
+    }, [storage]);
+
     const deleteView = (index: number) => {
         const newItemStrings = [...itemStrings];
         newItemStrings.splice(index, 1);
@@ -122,8 +158,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     const [cursor, setCursor] = useState<{ cursor: string, variant: "before" | "after" } | undefined>(undefined)
 
     const handleSelect = (e: number) => {
-        console.log('request ', e)
-        // send request
         setSelected(e)
     }
 
@@ -143,8 +177,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     const [sortSelected, setSortSelected] = useState(['CREATED_AT asc']);
 
     const handleSort = (e: string[]) => {
-        console.log('request ', e)
-        // send request
         setSortSelected(e);
     }
 
@@ -153,8 +185,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     };
 
     const onHandleSave = async () => {
-        console.log('request on save')
-        // send request
         const params = getAllParams();
         onRequest(params);
         return true;
@@ -224,14 +254,14 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                     title="Financial Status"
                     titleHidden
                     choices={[
-                        {label: 'PENDING', value: 'pending'},
-                        {label: 'AUTHORIZED', value: 'authorized'},
-                        {label: 'PARTIALLY_PAID', value: 'partially_paid'},
-                        {label: 'PARTIALLY_REFUNDED', value: 'partially_refunded'},
-                        {label: 'VOIDED', value: 'voided'},
-                        {label: 'PAID', value: 'paid'},
-                        {label: 'REFUNDED', value: 'refunded'},
-                        {label: 'EXPIRED', value: 'expired'},
+                        {label: 'PENDING', value: E_STATUS.PENDING},
+                        {label: 'AUTHORIZED', value: E_STATUS.AUTHORIZED},
+                        {label: 'PARTIALLY_PAID', value: E_STATUS.PARTIALLY_PAID},
+                        {label: 'PARTIALLY_REFUNDED', value: E_STATUS.PARTIALLY_REFUNDED},
+                        {label: 'VOIDED', value: E_STATUS.VOIDED},
+                        {label: 'PAID', value: E_STATUS.PAID},
+                        {label: 'REFUNDED', value: E_STATUS.REFUNDED},
+                        {label: 'EXPIRED', value: E_STATUS.EXPIRED},
                     ]}
                     selected={financialStatus || []}
                     onChange={handleFinancialStatusChange}
@@ -290,23 +320,38 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
             </IndexTable.Row>
 
         return nodes?.map(
-            (o: any, index: number) => (
-                <IndexTable.Row id={o.id} key={o.id} position={index}>
-                    <IndexTable.Cell>
-                        <Text variant="bodyMd" fontWeight="bold" as="span">
-                            <Link to={`/orders/${o.id.split('/').at(-1)}`}>{o.name}</Link>
-                        </Text>
-                    </IndexTable.Cell>
-                    <IndexTable.Cell><Text as={"h3"} alignment={"center"}>$ {o.totalPrice}</Text></IndexTable.Cell>
-                    <IndexTable.Cell><Text as={"h3"}
-                                           alignment={"center"}>{o.subtotalLineItemsQuantity}</Text></IndexTable.Cell>
-                    <IndexTable.Cell><Text as={"h3"}
-                                           alignment={"start"}>{o.displayAddress && o.displayAddress.formatted ? o.displayAddress.formatted.toReversed().join(', ') : ""}</Text></IndexTable.Cell>
-                    <IndexTable.Cell><Text as={"h3"}
-                        /*@ts-ignore*/
-                                           alignment={"center"}>{new Date(o.createdAt).toLocaleDateString({}, {dateStyle: "short"})}</Text></IndexTable.Cell>
-                </IndexTable.Row>
-            )
+            (o: any, index: number) => {
+                const address = o.displayAddress && o.displayAddress.formatted ? o.displayAddress.formatted.toReversed().join(', ') : "";
+                return(
+                    <IndexTable.Row id={o.id} key={o.id} position={index}>
+                        <IndexTable.Cell>
+                            <Text variant="bodyMd" fontWeight="bold" as="span">
+                                <Link to={`/orders/${o.id.split('/').at(-1)}`}>{o.name}</Link>
+                            </Text>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell><Text as={"h3"} alignment={"center"}>$ {o.totalPrice}</Text></IndexTable.Cell>
+                        <IndexTable.Cell><Text as={"h3"}
+                                               alignment={"center"}>{o.subtotalLineItemsQuantity}</Text></IndexTable.Cell>
+                        <IndexTable.Cell>
+                            <Box maxWidth={"250px"}>
+                                <Tooltip content={address} active={address.length > 40}>
+                                <Text as={"h3"} truncate breakWord
+                                      alignment={"start"}>{address}</Text>
+                                </Tooltip>
+                            </Box>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                            <Tooltip content={moment(o.createdAt).format('MM-DD-yyyy HH:mm')}>
+                                <Text as={"h3"}
+                                      alignment={"center"}>{moment(o.createdAt).format('MM-DD-yyyy')}</Text>
+                            </Tooltip>
+                        </IndexTable.Cell>
+                        <IndexTable.Cell>
+                            <FinancialStatus status={o.displayFinancialStatus}/>
+                        </IndexTable.Cell>
+                    </IndexTable.Row>
+                )
+            }
         );
     }, [data]);
 
@@ -333,7 +378,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     }, [sortSelected, queryValue, cursor, selected, selectedDates]);
 
     useEffect(() => {
-        console.log(sortSelected)
         const params = getAllParams();
         onRequest(params);
     }, [cursor, sortSelected, selected]);
@@ -385,7 +429,7 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                 >
                     {rowMarkup()}
                     <tr className={cl.pagination}>
-                        <td colSpan={5} align={"center"}>
+                        <td colSpan={6} align={"center"}>
                             <Pagination type={"table"} hasNext={pageInfo?.hasNextPage} hasPrevious={pageInfo?.hasPreviousPage}
                                         onNext={handleNext} onPrevious={handlePrevious}></Pagination>
                         </td>

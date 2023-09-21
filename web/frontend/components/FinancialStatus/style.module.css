@@ -1,0 +1,31 @@
+div[aria-details='pending']{
+    background: #D2BF12;
+}
+
+div[aria-details='authorized']{
+    background: #2A94B6;
+}
+
+div[aria-details='partially_paid']{
+    background: #C12BDA;
+}
+
+div[aria-details='partially_refunded']{
+    background: #DB6868;
+}
+
+div[aria-details='voided']{
+    background: #000000;
+}
+
+div[aria-details='refunded']{
+    background: #DA2B2B;
+}
+
+div[aria-details='paid']{
+    background: #2AB68F;
+}
+
+div[aria-details='expired']{
+    background: #cb7443;
+}

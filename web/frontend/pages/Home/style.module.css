@@ -1,30 +1,4 @@
-.chart_container{
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-}
-
-.chart_container div:first-child{
-    /*position: absolute;*/
-}
-
-.container{
-    padding: 0 20px;
-}
-
-.chart_buttons{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px;
-
-    border: 1px #24303E solid;
-    border-radius: 100px;
-    padding: 4px 8px;
-}
-
-.chart_buttons > span {
+span[aria-details="span-ico"] {
     width: 28px;
     height: 28px;
     border-radius: 100px;
@@ -34,11 +8,11 @@
     cursor: pointer;
 }
 
-span svg {
+span[aria-details="span-ico"] svg {
     z-index: 999;
 }
 
-.selector {
+span[aria-details='selector'] {
     background: #24303E;
     position: absolute;
 
@@ -47,21 +21,21 @@ span svg {
     transform: translate(-60%, 0);
 }
 
-.first .selector {
-    transform: translate(-60%, 0);
+div[aria-details='first'] span[aria-details='selector'] {
+    transform: translate(-65%, 0);
 }
 
-.second .selector{
-    transform: translate(55%, 0);
+div[aria-details='second'] span[aria-details='selector']{
+    transform: translate(60%, 0);
 }
 
-.first span:nth-child(2) path{
+div[aria-details='first'] span:nth-child(2) path{
     transition-delay: .2s;
     stroke: white;
     fill: white;
 }
 
-.second span:nth-child(3) path{
+div[aria-details='second'] span:nth-child(3) path{
     transition-delay: .2s;
     stroke: white;
     fill: white;
@@ -69,4 +43,9 @@ span svg {
 
 table thead tr th{
     font-weight: bold !important;
+    font-size: 14px !important;
+}
+
+table tr td, table tr th{
+    position: inherit !important;
 }

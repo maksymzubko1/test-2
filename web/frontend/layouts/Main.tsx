@@ -1,22 +1,27 @@
-import {Navigate, Outlet, useLocation} from "react-router-dom";
+import {Outlet} from "react-router-dom";
 import {Header} from "./components/Header/Header";
-import {Grid, Page} from "@shopify/polaris";
+import {Box, Grid, VerticalStack} from "@shopify/polaris";
 import {Sidebar} from "./components/Sidebar/Sidebar";
+import {TitleBar} from "@shopify/app-bridge-react";
+import "./style.css"
 
 export const MainLayout = () => {
     return (
-        <div style={{display: "flex", flexDirection: "column", width: "100%", height: "100%"}}>
-            <Grid columns={{xl: 12}}>
-                <Grid.Cell columnSpan={{xl:12}}>
-                    <Header/>
-                </Grid.Cell>
-                <Grid.Cell columnSpan={{xl:2}}>
-                    <Sidebar/>
-                </Grid.Cell>
-                <Grid.Cell columnSpan={{xl:9}}>
-                    <Outlet/>
-                </Grid.Cell>
-            </Grid>
-        </div>
+        <>
+            <TitleBar title="App" primaryAction={null}/>
+            <VerticalStack>
+                <Header/>
+                <Grid columns={{xl: 12}}>
+                    <Grid.Cell columnSpan={{xl: 2}}>
+                        <Sidebar/>
+                    </Grid.Cell>
+                    <Grid.Cell columnSpan={{xl: 9}}>
+                        <Box paddingBlockStart={"10"} aria-details={"main-content"}>
+                            <Outlet/>
+                        </Box>
+                    </Grid.Cell>
+                </Grid>
+            </VerticalStack>
+        </>
     );
 };
