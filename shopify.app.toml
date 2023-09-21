@@ -2,19 +2,19 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://il-few-arise-processing.trycloudflare.com"
+application_url = "https://copyrighted-martin-left-daisy.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products, write_orders"
+scopes = "write_products, write_orders, read_customers"
 use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://il-few-arise-processing.trycloudflare.com/auth/callback",
-  "https://il-few-arise-processing.trycloudflare.com/auth/shopify/callback",
-  "https://il-few-arise-processing.trycloudflare.com/api/auth/callback"
+  "https://copyrighted-martin-left-daisy.trycloudflare.com/auth/callback",
+  "https://copyrighted-martin-left-daisy.trycloudflare.com/auth/shopify/callback",
+  "https://copyrighted-martin-left-daisy.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

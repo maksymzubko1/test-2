@@ -15,8 +15,8 @@ export const MainLayout = () => {
                     <Grid.Cell columnSpan={{xl: 2}}>
                         <Sidebar/>
                     </Grid.Cell>
-                    <Grid.Cell columnSpan={{xl: 9}}>
-                        <Box paddingBlockStart={"10"} aria-details={"main-content"}>
+                    <Grid.Cell columnSpan={{xl: 10}}>
+                        <Box paddingBlockStart={"10"} paddingInlineEnd={"10"} aria-details={"main-content"} paddingBlockEnd={"10"}>
                             <Outlet/>
                         </Box>
                     </Grid.Cell>

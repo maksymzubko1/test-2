@@ -29,3 +29,14 @@ div[aria-details='paid']{
 div[aria-details='expired']{
     background: #cb7443;
 }
+
+div[aria-details='pending'] span,
+div[aria-details='authorized'] span,
+div[aria-details='partially_paid'] span,
+div[aria-details='partially_refunded'] span,
+div[aria-details='voided'] span,
+div[aria-details='refunded'] span,
+div[aria-details='paid'] span,
+div[aria-details='expired'] span{
+    text-transform: capitalize;
+}

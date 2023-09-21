@@ -50,3 +50,91 @@ export const GET_ORDERS_TOP5 = `
     }
   }
 `;
+
+export const GET_ORDER = `
+query getOrder($id: ID!) {
+  order(id: $id) {
+    id
+    name
+    note
+    customer {
+      id
+      displayName
+      email
+      phone
+    }
+    shippingAddress{
+      formatted
+    }
+    billingAddress{
+      formatted
+    }
+    lineItems(first:10){
+      nodes{
+        id
+        title
+        image{
+          url
+        }
+        product{
+          id
+        }
+        originalUnitPriceSet{
+          shopMoney{
+            amount
+            currencyCode
+          }
+        }
+        originalTotalSet{
+          shopMoney {
+            amount
+            currencyCode
+          }
+        }
+        quantity
+      }
+    }
+    billingAddressMatchesShippingAddress
+    tags
+    createdAt
+    displayFulfillmentStatus
+    displayFinancialStatus
+    currencyCode
+    taxesIncluded
+    currentSubtotalLineItemsQuantity
+    currentSubtotalPriceSet {
+      shopMoney {
+        amount
+      }
+    }
+    totalDiscountsSet{
+      shopMoney{
+        amount
+      }
+    }
+    totalWeight
+    shippingLine {
+      title
+      originalPriceSet{
+        shopMoney{
+          amount
+        }
+      }
+    }
+    totalPriceSet {
+      shopMoney {
+        amount
+      }
+    }
+    currentTaxLines {
+      ratePercentage
+      title
+      priceSet {
+        shopMoney {
+          amount
+        }
+      }
+    }
+    unpaid
+  }
+}`

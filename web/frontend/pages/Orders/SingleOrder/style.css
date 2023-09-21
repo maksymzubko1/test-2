@@ -1,0 +1,18 @@
+div[aria-details='badge-icon-div']>span{
+    width: 150px;
+    height: 40px;
+}
+
+div[aria-details='badge-icon-div'] span svg{
+    width: 40px;
+    height: 40px;
+}
+div[aria-details='badge-icon-div'] span {
+    font-size: 16px;
+}
+
+
+div[aria-details='badge-icon-div'] span span:nth-child(2), div[aria-details='badge-icon-div'] span span:nth-child(2) span:nth-child(1){
+    height: 30px;
+    width: 30px;
+}
