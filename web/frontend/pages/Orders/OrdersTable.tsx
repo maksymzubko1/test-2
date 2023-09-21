@@ -20,6 +20,7 @@ import {E_SORT, E_STATUS, I_OrdersGetDto} from "../../graphql/orders.interfaces"
 import cl from './style.module.css'
 import moment from "moment";
 import {FinancialStatus} from "../../components/FinancialStatus/FinancialStatus";
+import {EditMinor} from "@shopify/polaris-icons";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
     {title: "Order", alignment: "start"},
@@ -62,50 +63,113 @@ interface I_Storage {
     filterName: string;
     sortSelected: string[];
     queryString: string;
-    selectedDates: {start: Date, end: Date} | undefined,
-    financialStatus: string;
+    selectedDates: { start: Date, end: Date } | undefined,
+    financialStatus: string[];
 }
 
-const DEFAULT_ITEM = {filterName: 'All', queryString: '', financialStatus: '', selectedDates: undefined, sortSelected: [`${E_SORT.createdAt} asc`]} as I_Storage
+const DEFAULT_ITEM = {
+    filterName: 'All',
+    queryString: '',
+    financialStatus: [],
+    selectedDates: undefined,
+    sortSelected: [`${E_SORT.createdAt} asc`]
+} as I_Storage
 
+function handleStorageItems() {
+    const _localStorage = localStorage.getItem('storageAppOrders');
+    if (!_localStorage)
+        localStorage.setItem('storageAppOrders', JSON.stringify([DEFAULT_ITEM]))
+    else {
+        try {
+            return JSON.parse(_localStorage) as I_Storage[];
+        } catch (err) {
+            console.log(_localStorage)
+            return null;
+        }
+    }
+}
 
 const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     const [itemStrings, setItemStrings] = useState([
         'All'
     ]);
     const [storage, setStorage] = useState<I_Storage[]>([DEFAULT_ITEM])
+    const {nodes, pageInfo} = data?.data?.orders ?? {nodes: undefined, pageInfo: undefined};
+    const [selected, setSelected] = useState(0);
+    const [cursor, setCursor] = useState<{ cursor: string, variant: "before" | "after" } | undefined>(undefined)
+    const sortOptions: IndexFiltersProps['sortOptions'] = [
+        {label: 'Items count', value: 'TOTAL_ITEMS_QUANTITY asc', directionLabel: 'Ascending'},
+        {label: 'Items count', value: 'TOTAL_ITEMS_QUANTITY desc', directionLabel: 'Descending'},
+        {label: 'Date', value: 'CREATED_AT asc', directionLabel: 'Ascending'},
+        {label: 'Date', value: 'CREATED_AT desc', directionLabel: 'Descending'},
+        {label: 'Total price', value: 'TOTAL_PRICE asc', directionLabel: 'Ascending'},
+        {label: 'Total price', value: 'TOTAL_PRICE desc', directionLabel: 'Descending'},
+    ];
+    const [sortSelected, setSortSelected] = useState(['CREATED_AT asc']);
+    const [financialStatus, setFinancialStatus] = useState<string[] | undefined>(
+        undefined,
+    );
+    const date = new Date();
+    const [{month, year}, setDate] = useState({month: date.getMonth(), year: date.getFullYear()});
+    const [selectedDates, setSelectedDates] = useState(undefined);
+    const [queryValue, setQueryValue] = useState('');
+    const [manualSetup, setManualSetup] = useState(false)
 
     useEffect(() => {
-        const _localStorage = localStorage.getItem('storageAppOrders');
-        if(!_localStorage)
-            localStorage.setItem('storageAppOrders', JSON.stringify([DEFAULT_ITEM]))
-        else
-        {
-            try{
-                const parsedStorage = JSON.parse(_localStorage) as I_Storage[];
-                setStorage(parsedStorage);
-            }
-            catch (err){
-                console.log(err)
-            }
-        }
+        const _storage = handleStorageItems();
+        if (_storage)
+            setStorage(_storage);
     }, []);
 
     useEffect(() => {
-        setItemStrings(storage.map(s=>s.filterName))
+        localStorage.setItem('storageAppOrders', JSON.stringify(storage));
+        setItemStrings(storage.map(s => s.filterName))
     }, [storage]);
 
+    useEffect(() => {
+        setManualSetup(true)
+        const itemFromStorage = storage.find((s, i) => i === selected);
+        setQueryValue(itemFromStorage.queryString);
+        setSelectedDates(itemFromStorage.selectedDates);
+        setSortSelected(itemFromStorage.sortSelected);
+        setFinancialStatus(itemFromStorage.financialStatus);
+        setManualSetup(false)
+    }, [selected, storage, itemStrings]);
+
+    useEffect(() => {
+        if (!manualSetup) {
+            const params = getAllParams();
+            onRequest(params);
+        }
+    }, [cursor, sortSelected, selected, manualSetup]);
+
     const deleteView = (index: number) => {
-        const newItemStrings = [...itemStrings];
-        newItemStrings.splice(index, 1);
-        setItemStrings(newItemStrings);
+        // const newItemStrings = [...itemStrings];
+        // newItemStrings.splice(index, 1);
+        // setItemStrings(newItemStrings);
+        setStorage(prev => {
+            const prevStorage = [...prev];
+            prevStorage.splice(index, 1);
+            return prevStorage;
+        })
         setSelected(0);
     };
-    const {nodes, pageInfo} = data?.data?.orders ?? {nodes: undefined, pageInfo: undefined};
+
 
     const duplicateView = async (name: string) => {
-        setItemStrings([...itemStrings, name]);
-        setSelected(itemStrings.length);
+        // setItemStrings([...itemStrings, name]);
+        // setSelected(itemStrings.length);
+        setStorage(prev => {
+            const prevStorage = [...prev];
+            prevStorage.push({
+                filterName: name,
+                sortSelected,
+                selectedDates,
+                financialStatus,
+                queryString: queryValue
+            } as I_Storage)
+            return prevStorage;
+        })
         return true;
     };
 
@@ -121,17 +185,21 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                 ? []
                 : [
                     {
+                        icon: EditMinor,
                         type: 'rename',
                         onAction: () => {
                         },
                         onPrimaryAction: async (value: string): Promise<boolean> => {
-                            const newItemsStrings = tabs.map((item, idx) => {
-                                if (idx === index) {
-                                    return value;
+                            setStorage(prev => {
+                                const prevStorage = [...prev];
+                                for (const prevStorageItem of prevStorage) {
+                                    if (prevStorageItem.filterName === itemStrings[selected]) {
+                                        prevStorageItem.filterName = value;
+                                        break;
+                                    }
                                 }
-                                return item.content;
-                            });
-                            setItemStrings(newItemsStrings);
+                                return prevStorage;
+                            })
                             return true;
                         },
                     },
@@ -143,9 +211,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                         },
                     },
                     {
-                        type: 'edit',
-                    },
-                    {
                         type: 'delete',
                         onPrimaryAction: async () => {
                             deleteView(index);
@@ -154,30 +219,41 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                     },
                 ],
     }));
-    const [selected, setSelected] = useState(0);
-    const [cursor, setCursor] = useState<{ cursor: string, variant: "before" | "after" } | undefined>(undefined)
 
     const handleSelect = (e: number) => {
         setSelected(e)
     }
 
     const onCreateNewView = async (value: string) => {
-        setItemStrings([...itemStrings, value]);
-        setSelected(itemStrings.length);
+        // setItemStrings([...itemStrings, value]);
+        // setSelected(itemStrings.length);
+        setStorage(prev => {
+            const prevStorage = [...prev];
+            prevStorage.push({
+                filterName: value,
+                sortSelected,
+                selectedDates,
+                financialStatus,
+                queryString: queryValue
+            } as I_Storage)
+            return prevStorage;
+        })
         return true;
     };
-    const sortOptions: IndexFiltersProps['sortOptions'] = [
-        {label: 'Items count', value: 'TOTAL_ITEMS_QUANTITY asc', directionLabel: 'Ascending'},
-        {label: 'Items count', value: 'TOTAL_ITEMS_QUANTITY desc', directionLabel: 'Descending'},
-        {label: 'Date', value: 'CREATED_AT asc', directionLabel: 'Ascending'},
-        {label: 'Date', value: 'CREATED_AT desc', directionLabel: 'Descending'},
-        {label: 'Total price', value: 'TOTAL_PRICE asc', directionLabel: 'Ascending'},
-        {label: 'Total price', value: 'TOTAL_PRICE desc', directionLabel: 'Descending'},
-    ];
-    const [sortSelected, setSortSelected] = useState(['CREATED_AT asc']);
 
     const handleSort = (e: string[]) => {
         setSortSelected(e);
+
+        setStorage(prev => {
+            const prevStorage = [...prev];
+            for (const prevStorageItem of prevStorage) {
+                if (prevStorageItem.filterName === itemStrings[selected]) {
+                    prevStorageItem.sortSelected = e;
+                    break;
+                }
+            }
+            return prevStorage;
+        })
     }
 
     const {mode, setMode} = useSetIndexFiltersMode();
@@ -187,6 +263,19 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
     const onHandleSave = async () => {
         const params = getAllParams();
         onRequest(params);
+        setStorage(prev => {
+            const prevStorage = [...prev];
+            for (const prevStorageItem of prevStorage) {
+                if (prevStorageItem.filterName === itemStrings[selected]) {
+                    prevStorageItem.queryString = queryValue;
+                    prevStorageItem.sortSelected = sortSelected;
+                    prevStorageItem.financialStatus = financialStatus;
+                    prevStorageItem.selectedDates = selectedDates;
+                    break;
+                }
+            }
+            return prevStorage;
+        })
         return true;
     };
 
@@ -204,13 +293,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                 disabled: false,
                 loading: false,
             };
-    const [financialStatus, setFinancialStatus] = useState<string[] | undefined>(
-        undefined,
-    );
-    const date = new Date();
-    const [{month, year}, setDate] = useState({month: date.getMonth(), year: date.getFullYear()});
-    const [selectedDates, setSelectedDates] = useState(undefined);
-    const [queryValue, setQueryValue] = useState('');
 
     const handleFinancialStatusChange = useCallback(
         (value: string[]) => setFinancialStatus(value),
@@ -322,7 +404,7 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
         return nodes?.map(
             (o: any, index: number) => {
                 const address = o.displayAddress && o.displayAddress.formatted ? o.displayAddress.formatted.toReversed().join(', ') : "";
-                return(
+                return (
                     <IndexTable.Row id={o.id} key={o.id} position={index}>
                         <IndexTable.Cell>
                             <Text variant="bodyMd" fontWeight="bold" as="span">
@@ -335,8 +417,8 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                         <IndexTable.Cell>
                             <Box maxWidth={"250px"}>
                                 <Tooltip content={address} active={address.length > 40}>
-                                <Text as={"h3"} truncate breakWord
-                                      alignment={"start"}>{address}</Text>
+                                    <Text as={"h3"} truncate breakWord
+                                          alignment={"start"}>{address}</Text>
                                 </Tooltip>
                             </Box>
                         </IndexTable.Cell>
@@ -377,10 +459,6 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
         } as I_OrdersGetDto
     }, [sortSelected, queryValue, cursor, selected, selectedDates]);
 
-    useEffect(() => {
-        const params = getAllParams();
-        onRequest(params);
-    }, [cursor, sortSelected, selected]);
 
     const handleNext = () => {
         setCursor({cursor: pageInfo?.endCursor, variant: "after"})
@@ -430,7 +508,8 @@ const OrdersTable = ({data, isLoading, onRequest}: I_Props) => {
                     {rowMarkup()}
                     <tr className={cl.pagination}>
                         <td colSpan={6} align={"center"}>
-                            <Pagination type={"table"} hasNext={pageInfo?.hasNextPage} hasPrevious={pageInfo?.hasPreviousPage}
+                            <Pagination type={"table"} hasNext={pageInfo?.hasNextPage}
+                                        hasPrevious={pageInfo?.hasPreviousPage}
                                         onNext={handleNext} onPrevious={handlePrevious}></Pagination>
                         </td>
                     </tr>
