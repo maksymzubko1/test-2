@@ -8,15 +8,18 @@ import { PropsWithChildren } from "react";
 
 const queryClient = new QueryClient({
   queryCache: new QueryCache({
-    onError: (error, data) => {
+    onError: (error) => {
+      console.log("queryClientCacheError ", error);
     },
   }),
   mutationCache: new MutationCache({
-    onSuccess: (result: { success: boolean; error: string }, data) => {
+    onSuccess: (result: { success: boolean; error: string }) => {
       if (!result || !result.success) {
+        console.log("Failed mutation");
       }
     },
-    onError: (error, data) => {
+    onError: (error) => {
+      console.log("queryClientMutationError ", error);
     },
   }),
 });

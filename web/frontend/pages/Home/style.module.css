@@ -1,51 +1,52 @@
 span[aria-details="span-ico"] {
-    width: 28px;
-    height: 28px;
-    border-radius: 100px;
-    display: grid;
-    place-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 100px;
+  display: grid;
+  place-content: center;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 span[aria-details="span-ico"] svg {
-    z-index: 999;
+  z-index: 999;
 }
 
-span[aria-details='selector'] {
-    background: #24303E;
-    position: absolute;
+span[aria-details="selector"] {
+  background: #24303e;
+  position: absolute;
 
-    transition: all .2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 
-    transform: translate(-60%, 0);
+  transform: translate(-60%, 0);
 }
 
-div[aria-details='first'] span[aria-details='selector'] {
-    transform: translate(-65%, 0);
+div[aria-details="first"] span[aria-details="selector"] {
+  transform: translate(-65%, 0);
 }
 
-div[aria-details='second'] span[aria-details='selector']{
-    transform: translate(60%, 0);
+div[aria-details="second"] span[aria-details="selector"] {
+  transform: translate(60%, 0);
 }
 
-div[aria-details='first'] span:nth-child(2) path{
-    transition-delay: .2s;
-    stroke: white;
-    fill: white;
+div[aria-details="first"] span:nth-child(2) path {
+  transition-delay: 0.2s;
+  stroke: white;
+  fill: white;
 }
 
-div[aria-details='second'] span:nth-child(3) path{
-    transition-delay: .2s;
-    stroke: white;
-    fill: white;
+div[aria-details="second"] span:nth-child(3) path {
+  transition-delay: 0.2s;
+  stroke: white;
+  fill: white;
 }
 
-table thead tr th{
-    font-weight: bold !important;
-    font-size: 14px !important;
+table thead tr th {
+  font-weight: bold !important;
+  font-size: 14px !important;
 }
 
-table tr td, table tr th{
-    position: inherit !important;
+table tr td,
+table tr th {
+  position: inherit !important;
 }

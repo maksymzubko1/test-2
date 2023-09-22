@@ -1,7 +1,7 @@
 {
   "name": "shopify-template-node-typescript",
   "author": "saeedyasin.com",
-  "version": "1.19.0",
+  "version": "1.20.0",
   "main": "web/backend/index.js",
   "license": "UNLICENSED",
   "scripts": {

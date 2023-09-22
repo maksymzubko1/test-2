@@ -1,11 +1,10 @@
-.Polaris-IndexTable__ScrollBarContainer{
-    display: none !important;
+.Polaris-IndexTable__ScrollBarContainer {
+  display: none !important;
 }
 
-.pagination{
-    width: 100%;
+.pagination {
+  width: 100%;
 }
 
 .pagination td {
-
 }

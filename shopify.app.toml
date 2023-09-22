@@ -2,7 +2,7 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://copyrighted-martin-left-daisy.trycloudflare.com"
+application_url = "https://fancy-vids-streets-newbie.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -12,9 +12,9 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://copyrighted-martin-left-daisy.trycloudflare.com/auth/callback",
-  "https://copyrighted-martin-left-daisy.trycloudflare.com/auth/shopify/callback",
-  "https://copyrighted-martin-left-daisy.trycloudflare.com/api/auth/callback"
+  "https://fancy-vids-streets-newbie.trycloudflare.com/auth/callback",
+  "https://fancy-vids-streets-newbie.trycloudflare.com/auth/shopify/callback",
+  "https://fancy-vids-streets-newbie.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

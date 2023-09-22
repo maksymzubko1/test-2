@@ -1,5 +1,5 @@
-div[aria-details="main-content"]{
-    max-height: 90svh;
-    overflow: auto;
-    /*overflow-x: hidden;*/
+div[aria-details="main-content"] {
+  max-height: 90svh;
+  overflow: auto;
+  /*overflow-x: hidden;*/
 }

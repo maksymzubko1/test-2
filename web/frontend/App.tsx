@@ -2,17 +2,14 @@ import { NavigationMenu } from "@shopify/app-bridge-react";
 import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { ErrorBoundary } from "react-error-boundary";
 import { HelmetProvider } from "react-helmet-async";
-import { useTranslation } from "react-i18next";
 import { BrowserRouter } from "react-router-dom";
-import Routes, { type Route } from "./Routes";
+import Routes from "./Routes";
 import ErrorBoundaryView from "./components/ErrorView";
 import { GlobalLoadingIndicator } from "./components/GlobalLoadingIndicator";
-import { ShopContextProvider } from "./hooks/index";
+import { ShopContextProvider } from "./hooks";
 import { AppBridgeProvider, PolarisProvider, QueryProvider } from "./providers";
 
 export default function App() {
-  const { t } = useTranslation();
-
   return (
     <PolarisProvider>
       <QueryErrorResetBoundary>
@@ -20,8 +17,7 @@ export default function App() {
           <ErrorBoundary
             FallbackComponent={ErrorBoundaryView}
             onReset={reset}
-            onError={(error, info) => {
-            }}
+            onError={() => {}}
           >
             <BrowserRouter>
               <AppBridgeProvider>

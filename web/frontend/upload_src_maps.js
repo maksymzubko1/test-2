@@ -23,7 +23,6 @@ const deleteSrcMaps = async () => {
 };
 
 const main = async () => {
-  await uploadSrcMaps();
   await deleteSrcMaps();
 };
 

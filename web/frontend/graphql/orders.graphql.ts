@@ -107,6 +107,14 @@ query getOrder($id: ID!) {
         amount
       }
     }
+     transactions{
+      amountSet {
+        shopMoney {
+          amount
+        }
+      }
+      status
+    }
     totalDiscountsSet{
       shopMoney{
         amount
@@ -135,6 +143,5 @@ query getOrder($id: ID!) {
         }
       }
     }
-    unpaid
   }
-}`
+}`;
