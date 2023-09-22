@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import { getOrderDetails } from "../../../utils/orderDetails";
 import {
   Badge,
@@ -16,18 +16,23 @@ import { CustomBadge } from "../../../components/CustomBadge/CustomBadge";
 import { DEFAULT_IMAGE, DEFAULT_URL } from "../../../constants/constants";
 import { ViewMinor } from "@shopify/polaris-icons";
 import moment from "moment";
+import {useShop} from "../../../hooks";
 
 interface I_Props {
   order: any;
 }
 export const OrderContent = ({ order }: I_Props) => {
-  const handleClick = () => {
+  const {state} = useShop()
+
+  const DEFAULT_URL_SHOP = `${DEFAULT_URL}/${state.shop.replace('.myshopify.com', '')}`;
+
+  const handleClick = useCallback(() => {
     const a = document.createElement("a");
-    a.href = `${DEFAULT_URL}/orders/${id}`;
+    a.href = `${DEFAULT_URL_SHOP}/orders/${id}`;
     a.target = "_blank";
     a.click();
     a.remove();
-  };
+  }, [state])
 
   const {
     orderItems,
@@ -76,7 +81,7 @@ export const OrderContent = ({ order }: I_Props) => {
                       />
                       <Text as={"p"} variant={"bodyLg"}>
                         <Link
-                          url={`${DEFAULT_URL}/products/${product_id}`}
+                          url={`${DEFAULT_URL_SHOP}/products/${product_id}`}
                           target={"_blank"}
                         >
                           {i.title}
@@ -110,7 +115,7 @@ export const OrderContent = ({ order }: I_Props) => {
                 variant={"bodyLg"}
                 as={"p"}
               >
-                <Link url={`${DEFAULT_URL}/orders/${id}`} target={"_blank"}>
+                <Link url={`${DEFAULT_URL_SHOP}/orders/${id}`} target={"_blank"}>
                   more...
                 </Link>
               </Text>
@@ -256,7 +261,7 @@ export const OrderContent = ({ order }: I_Props) => {
         <LegacyCard.Section title={"Customer"}>
           <Text as={"p"} variant={"bodyLg"}>
             <Link
-              url={`${DEFAULT_URL}/customers/${customer.id}`}
+              url={`${DEFAULT_URL_SHOP}/customers/${customer.id}`}
               target={"_blank"}
             >
               {customer.displayName}
@@ -298,8 +303,8 @@ export const OrderContent = ({ order }: I_Props) => {
       <LegacyCard.Section title={"SHIPPING ADDRESS"}>
         <VerticalStack gap={"1"}>
           {shippingAddress.length ? (
-            shippingAddress.map((o: string) => (
-              <Text key={`shipping-text-${o}`} as={"p"} variant={"bodyLg"}>
+            shippingAddress.map((o: string, index: number) => (
+              <Text key={`shipping-text-${o}${index}`} as={"p"} variant={"bodyLg"}>
                 {o}
               </Text>
             ))
@@ -322,8 +327,8 @@ export const OrderContent = ({ order }: I_Props) => {
               Same as shipping address
             </Text>
           ) : billingAddress.length ? (
-            billingAddress.map((o: string) => (
-              <Text key={`billing-text-${o}`} as={"p"} variant={"bodyLg"}>
+            billingAddress.map((o: string, index: number) => (
+              <Text key={`billing-text-${o}${index}`} as={"p"} variant={"bodyLg"}>
                 {o}
               </Text>
             ))
