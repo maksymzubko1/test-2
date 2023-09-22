@@ -39,9 +39,9 @@ const headings: NonEmptyArray<IndexTableHeading> = [
 function disambiguateLabel(key: string, value: string | any[]): string {
   switch (key) {
     case "dateRange":
-      const datesEquals = moment(value[0]).isSame(value[1]);
-      if (datesEquals) return `Date equal ${moment().format("MM-DD-yyyy")}`;
-      return `Date range is between ${moment().format(
+      const datesEquals = moment(value[0]).isSame(moment(value[1]));
+      if (datesEquals) return `Date equal ${moment(value[0]).format("MM-DD-yyyy")}`;
+      return `Date range is between ${moment(value[0]).format(
         "MM-DD-yyyy"
       )} and ${moment(value[1]).format("MM-DD-yyyy")}`;
     case "financialStatus":
@@ -159,7 +159,11 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
     setManualSetup(true);
     const itemFromStorage = storage.find((s, i) => i === selected);
     setQueryValue(itemFromStorage.queryString);
-    setSelectedDates(itemFromStorage.selectedDates);
+
+    const startDate = new Date(itemFromStorage?.selectedDates?.start ?? new Date())
+    const endDate = new Date(itemFromStorage?.selectedDates?.end ?? new Date())
+
+    setSelectedDates(itemFromStorage?.selectedDates ? {start: startDate, end: endDate} : undefined);
     setSortSelected(itemFromStorage.sortSelected);
     setFinancialStatus(itemFromStorage.financialStatus);
     setManualSetup(false);
@@ -173,9 +177,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
   }, [cursor, sortSelected, selected, manualSetup]);
 
   const deleteView = (index: number) => {
-    // const newItemStrings = [...itemStrings];
-    // newItemStrings.splice(index, 1);
-    // setItemStrings(newItemStrings);
     setStorage((prev) => {
       const prevStorage = [...prev];
       prevStorage.splice(index, 1);
@@ -185,8 +186,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
   };
 
   const duplicateView = async (name: string) => {
-    // setItemStrings([...itemStrings, name]);
-    // setSelected(itemStrings.length);
     setStorage((prev) => {
       const prevStorage = [...prev];
       prevStorage.push({
@@ -251,8 +250,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
   };
 
   const onCreateNewView = async (value: string) => {
-    // setItemStrings([...itemStrings, value]);
-    // setSelected(itemStrings.length);
     setStorage((prev) => {
       const prevStorage = [...prev];
       prevStorage.push({
@@ -485,12 +482,17 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
 
     const name = queryValue;
     const dates = selectedDates;
+    const status = financialStatus;
 
     if (name) query.push(`name:${name}*`);
     if (dates)
       query.push(
-        `createdAt:>=${dates.start.toISOString()} createdAt:<=${dates.end.toISOString()}`
+        `created_at:>=${moment(dates.start).toISOString()} created_at:<=${moment(dates.end).toISOString()}`
       );
+    if (status?.length)
+    {
+      query.push(`(${status.map(s=>`financial_status:${s}`).join(' OR ')})`)
+    }
 
     return {
       sort: _sortData.at(0),
@@ -500,7 +502,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
       before: cursor?.variant === "before" ? cursor.cursor : undefined,
       query: query.length > 0 ? query.join(" ") : undefined,
     } as I_OrdersGetDto;
-  }, [sortSelected, queryValue, cursor, selected, selectedDates]);
+  }, [sortSelected, queryValue, cursor, selected, selectedDates, financialStatus]);
 
   const handleNext = () => {
     setCursor({ cursor: pageInfo?.endCursor, variant: "after" });
@@ -540,7 +542,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
         />
         <IndexTable
           selectable={false}
-          // loading={isLoading}
+          loading={isLoading}
           headings={headings}
           hasZebraStriping={true}
           resourceName={resourceName}
