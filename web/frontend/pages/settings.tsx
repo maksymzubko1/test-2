@@ -1,5 +1,4 @@
-import { Text, Page, LegacyStack, VerticalStack } from "@shopify/polaris";
-import { TitleBar } from "@shopify/app-bridge-react";
+import { Text, LegacyStack, VerticalStack } from "@shopify/polaris";
 import { ActiveSubscriptions } from "../components/ActiveSubscriptions";
 import { Header } from "../layouts/components/Header/Header";
 

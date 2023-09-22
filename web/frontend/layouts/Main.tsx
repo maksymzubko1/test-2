@@ -1,8 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "./components/Header/Header";
-import { Box, Grid, VerticalStack } from "@shopify/polaris";
+import { Box, Divider, Grid, VerticalStack } from "@shopify/polaris";
 import { Sidebar } from "./components/Sidebar/Sidebar";
-import { TitleBar } from "@shopify/app-bridge-react";
 import "./style.css";
 
 export const MainLayout = () => {
@@ -14,12 +13,10 @@ export const MainLayout = () => {
           <Sidebar />
         </Grid.Cell>
         <Grid.Cell columnSpan={{ xl: 10, lg: 10, md: 5, sm: 5 }}>
-          <Box
-            aria-details={"main-content"}
-            paddingBlockEnd={"10"}
-            overflowX={"hidden"}
-          >
+          <Box aria-details={"main-content"} overflowX={"hidden"}>
             <Outlet />
+            <br />
+            <br />
           </Box>
         </Grid.Cell>
       </Grid>
