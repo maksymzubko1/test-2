@@ -94,7 +94,7 @@ export const Home = () => {
       // @ts-ignore
       orders?.forEach((order) => {
         const createdAt = new Date(order.createdAt);
-        const date = createdAt.toISOString().split("T")[0]; // Extract the date in YYYY-MM-DD format
+        const date = createdAt.toISOString().split("T")[0];
 
         if (dateCounts[date]) {
           dateCounts[date]++;
@@ -124,7 +124,7 @@ export const Home = () => {
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              $ {o.totalPrice}
+              $ {o.totalPriceSet?.shopMoney?.amount}
             </Text>
           </IndexTable.Cell>
         </IndexTable.Row>

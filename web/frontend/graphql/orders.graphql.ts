@@ -10,7 +10,11 @@ export const GET_ORDERS_QUERY = `
           }
           displayFinancialStatus
           subtotalLineItemsQuantity
-          totalPrice
+          totalPriceSet {
+            shopMoney {
+              amount
+            }
+          }
           createdAt
           updatedAt
           tags
@@ -37,7 +41,11 @@ export const GET_ORDERS_TOP5 = `
           }
           displayFinancialStatus
           subtotalLineItemsQuantity
-          totalPrice
+          totalPriceSet {
+            shopMoney {
+              amount
+            }
+          }
           createdAt
           updatedAt
           tags

@@ -18,9 +18,7 @@ import billingRoutes, {
   billingUnauthenticatedRoutes,
 } from "./routes/billing/index";
 import blockRoutes from "./routes/blocks";
-import productRoutes from "./routes/products";
 import shopRoutes from "./routes/shop";
-import ordersRoutes from "./routes/orders";
 import graphqlRoute from "./routes/graphql";
 
 const PORT = parseInt(
@@ -77,11 +75,9 @@ app.use("/api/*", (req: Request, res: Response, next: NextFunction) => {
 });
 
 app.use(express.json());
-app.use("/api/products", productRoutes);
 app.use("/api/block", blockRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/billing", billingRoutes);
-app.use("/api/orders", ordersRoutes);
 app.use("/api/graphql", graphqlRoute);
 
 app.use(shopify.cspHeaders());

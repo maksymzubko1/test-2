@@ -447,7 +447,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              $ {o.totalPrice}
+              $ {o.totalPriceSet?.shopMoney?.amount}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
