@@ -1,11 +1,12 @@
-import { Text, Page, LegacyStack } from "@shopify/polaris";
+import { Text, Page, LegacyStack, VerticalStack } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { ActiveSubscriptions } from "../components/ActiveSubscriptions";
+import { Header } from "../layouts/components/Header/Header";
 
 const Settings = () => {
   return (
-    <Page>
-      <TitleBar title="Settings" primaryAction={null} />
+    <VerticalStack gap={"10"}>
+      <Header />
       <LegacyStack wrap={false} distribution="fill" alignment="center" vertical>
         <LegacyStack.Item>
           <LegacyStack vertical spacing="extraTight" alignment="center">
@@ -18,7 +19,7 @@ const Settings = () => {
           <ActiveSubscriptions />
         </LegacyStack.Item>
       </LegacyStack>
-    </Page>
+    </VerticalStack>
   );
 };
 
