@@ -2,38 +2,36 @@ import React, { useCallback, useEffect, useState } from "react";
 import { NonEmptyArray } from "@shopify/polaris/build/ts/src/types";
 import { IndexTableHeading } from "@shopify/polaris/build/ts/src/components/IndexTable";
 import {
-  Box,
-  ChoiceList,
-  DatePicker,
-  Frame,
+  Avatar, Badge,
+  Frame, HorizontalStack,
   IndexFilters,
   IndexFiltersProps,
   IndexTable,
   LegacyCard,
-  Pagination,
+  Pagination, Spinner,
   TabProps,
   Text,
   Tooltip,
   useSetIndexFiltersMode,
 } from "@shopify/polaris";
-import { Link } from "react-router-dom";
-import {
-  E_SORT_ORDERS,
-  E_STATUS_ORDERS,
-  I_OrdersGetDto,
-} from "../../graphql/orders/orders.interfaces";
-import cl from "./style.module.css";
+import {Link, useNavigate} from "react-router-dom";
+import "./style.css";
 import moment from "moment";
-import { FinancialStatus } from "../../components/FinancialStatus/FinancialStatus";
-import { EditMinor } from "@shopify/polaris-icons";
+import {EditMinor, ViewMinor} from "@shopify/polaris-icons";
+import {E_SORT_PRODUCTS, I_ProductsGetDto} from "../../graphql/products/products.interfaces";
+import {DEFAULT_IMAGE} from "../../constants/constants";
+import {capitalize} from "../../utils/capitalize";
+import {openNewTab} from "../../utils/openNewTab";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
-  { title: "Order", alignment: "start" },
-  { title: "Total Price", alignment: "center" },
-  { title: "Items Count", alignment: "center" },
-  { title: "Address", alignment: "start" },
-  { title: "Created Date", alignment: "center" },
-  { title: "Financial Status", alignment: "center" },
+  { title: "", alignment: "start" },
+  { title: "Product", alignment: "start" },
+  { title: "Status", alignment: "start" },
+  { title: "Inventory", alignment: "start" },
+  { title: "Sales channels", alignment: "start" },
+  { title: "Markets", alignment: "start" },
+  { title: "Type", alignment: "start" },
+  { title: "Vendor", alignment: "start" },
 ];
 
 function disambiguateLabel(key: string, value: string | any[]): string {
@@ -62,16 +60,15 @@ function isEmpty(value: string | string[]): boolean {
 }
 
 interface I_Props {
-  data: any;
-  isLoading: boolean;
-  onRequest: (options: I_OrdersGetDto) => void;
+  data: { allData: any; dataApps: any; dataMarkets: any; };
+  loadings: { allDataLoading: boolean; dataAppsLoading: boolean; dataMarketsLoading: boolean; };
+  onRequest: (options: I_ProductsGetDto) => void;
 }
 
 interface I_Storage {
   filterName: string;
   sortSelected: string[];
   queryString: string;
-  selectedDates: { start: Date; end: Date } | undefined;
   financialStatus: string[];
 }
 
@@ -79,14 +76,13 @@ const DEFAULT_ITEM = {
   filterName: "All",
   queryString: "",
   financialStatus: [],
-  selectedDates: undefined,
-  sortSelected: [`${E_SORT_ORDERS.createdAt} asc`],
+  sortSelected: [`${E_SORT_PRODUCTS.createdAt} asc`],
 } as I_Storage;
 
 function handleStorageItems() {
-  const _localStorage = localStorage.getItem("storageAppOrders");
+  const _localStorage = localStorage.getItem("storageAppProducts");
   if (!_localStorage)
-    localStorage.setItem("storageAppOrders", JSON.stringify([DEFAULT_ITEM]));
+    localStorage.setItem("storageAppProducts", JSON.stringify([DEFAULT_ITEM]));
   else {
     try {
       return JSON.parse(_localStorage) as I_Storage[];
@@ -97,51 +93,82 @@ function handleStorageItems() {
   }
 }
 
-const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
+const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
   const [itemStrings, setItemStrings] = useState(["All"]);
   const [storage, setStorage] = useState<I_Storage[]>([DEFAULT_ITEM]);
-  const { nodes, pageInfo } = data?.data?.orders ?? {
+  const { nodes, pageInfo } = data?.allData?.data?.products ?? {
     nodes: undefined,
     pageInfo: undefined,
   };
+  const navigate = useNavigate();
   const [selected, setSelected] = useState(0);
   const [cursor, setCursor] = useState<
     { cursor: string; variant: "before" | "after" } | undefined
   >(undefined);
   const sortOptions: IndexFiltersProps["sortOptions"] = [
     {
-      label: "Items count",
-      value: "TOTAL_ITEMS_QUANTITY asc",
-      directionLabel: "Ascending",
+      label: "Product title",
+      value: `${E_SORT_PRODUCTS.title} asc`,
+      directionLabel: "A-Z",
     },
     {
-      label: "Items count",
-      value: "TOTAL_ITEMS_QUANTITY desc",
-      directionLabel: "Descending",
-    },
-    { label: "Date", value: "CREATED_AT asc", directionLabel: "Ascending" },
-    { label: "Date", value: "CREATED_AT desc", directionLabel: "Descending" },
-    {
-      label: "Total price",
-      value: "TOTAL_PRICE asc",
-      directionLabel: "Ascending",
+      label: "Product title",
+      value: `${E_SORT_PRODUCTS.title} desc`,
+      directionLabel: "Z-A",
     },
     {
-      label: "Total price",
-      value: "TOTAL_PRICE desc",
-      directionLabel: "Descending",
+      label: "Created",
+      value: `${E_SORT_PRODUCTS.createdAt} asc`,
+      directionLabel: "Oldest first",
+    },
+    {
+      label: "Created",
+      value: `${E_SORT_PRODUCTS.createdAt} desc`,
+      directionLabel: "Newest first",
+    },
+    {
+      label: "Updated",
+      value: `${E_SORT_PRODUCTS.updatedAt} asc`,
+      directionLabel: "Oldest first",
+    },
+    {
+      label: "Updated",
+      value: `${E_SORT_PRODUCTS.updatedAt} desc`,
+      directionLabel: "Newest first",
+    },
+    {
+      label: "Inventory",
+      value: `${E_SORT_PRODUCTS.inventory} asc`,
+      directionLabel: "Lowest to highest",
+    },
+    {
+      label: "Inventory",
+      value: `${E_SORT_PRODUCTS.inventory} desc`,
+      directionLabel: "Highest to lowest",
+    },
+    {
+      label: "Product type",
+      value: `${E_SORT_PRODUCTS.productType} asc`,
+      directionLabel: "A-Z",
+    },
+    {
+      label: "Product type",
+      value: `${E_SORT_PRODUCTS.productType} desc`,
+      directionLabel: "Z-A",
+    },
+    {
+      label: "Vendor",
+      value: `${E_SORT_PRODUCTS.vendor} asc`,
+      directionLabel: "A-Z",
+    },
+    {
+      label: "Vendor",
+      value: `${E_SORT_PRODUCTS.vendor} desc`,
+      directionLabel: "Z-A",
     },
   ];
   const [sortSelected, setSortSelected] = useState(["CREATED_AT asc"]);
-  const [financialStatus, setFinancialStatus] = useState<string[] | undefined>(
-    undefined
-  );
-  const date = new Date();
-  const [{ month, year }, setDate] = useState({
-    month: date.getMonth(),
-    year: date.getFullYear(),
-  });
-  const [selectedDates, setSelectedDates] = useState(undefined);
+
   const [queryValue, setQueryValue] = useState("");
   const [manualSetup, setManualSetup] = useState(false);
 
@@ -151,7 +178,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
   }, []);
 
   useEffect(() => {
-    localStorage.setItem("storageAppOrders", JSON.stringify(storage));
+    localStorage.setItem("storageAppProducts", JSON.stringify(storage));
     setItemStrings(storage.map((s) => s.filterName));
   }, [storage]);
 
@@ -159,13 +186,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
     setManualSetup(true);
     const itemFromStorage = storage.find((s, i) => i === selected);
     setQueryValue(itemFromStorage.queryString);
-
-    const startDate = new Date(itemFromStorage?.selectedDates?.start ?? new Date())
-    const endDate = new Date(itemFromStorage?.selectedDates?.end ?? new Date())
-
-    setSelectedDates(itemFromStorage?.selectedDates ? {start: startDate, end: endDate} : undefined);
     setSortSelected(itemFromStorage.sortSelected);
-    setFinancialStatus(itemFromStorage.financialStatus);
     setManualSetup(false);
   }, [selected, storage, itemStrings]);
 
@@ -191,8 +212,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
       prevStorage.push({
         filterName: name,
         sortSelected,
-        selectedDates,
-        financialStatus,
         queryString: queryValue,
       } as I_Storage);
       return prevStorage;
@@ -255,8 +274,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
       prevStorage.push({
         filterName: value,
         sortSelected,
-        selectedDates,
-        financialStatus,
         queryString: queryValue,
       } as I_Storage);
       return prevStorage;
@@ -291,8 +308,6 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
         if (prevStorageItem.filterName === itemStrings[selected]) {
           prevStorageItem.queryString = queryValue;
           prevStorageItem.sortSelected = sortSelected;
-          prevStorageItem.financialStatus = financialStatus;
-          prevStorageItem.selectedDates = selectedDates;
           break;
         }
       }
@@ -316,104 +331,68 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
           loading: false,
         };
 
-  const handleFinancialStatusChange = useCallback(
-    (value: string[]) => setFinancialStatus(value),
-    []
-  );
-  const handleMonthChange = useCallback(
-    (month: number, year: number) => setDate({ month, year }),
-    []
-  );
-
   const handleFiltersQueryChange = useCallback(
     (value: string) => setQueryValue(value),
     []
   );
-  const handleFinancialStatusRemove = useCallback(
-    () => setFinancialStatus(undefined),
-    []
-  );
-
-  const handleDateValueRemove = useCallback(() => {
-    setDate({ month: date.getMonth(), year: date.getFullYear() });
-    setSelectedDates({ start: date, end: date });
-  }, []);
   const handleQueryValueRemove = useCallback(() => setQueryValue(""), []);
   const handleFiltersClearAll = useCallback(() => {
-    handleFinancialStatusRemove();
     handleQueryValueRemove();
-    handleDateValueRemove();
   }, [
-    handleDateValueRemove,
-    handleFinancialStatusRemove,
     handleQueryValueRemove,
   ]);
 
-  const filters = [
-    {
-      key: "financialStatus",
-      label: "Status like",
-      filter: (
-        <ChoiceList
-          title="Financial Status"
-          titleHidden
-          choices={[
-            { label: "PENDING", value: E_STATUS_ORDERS.PENDING },
-            { label: "AUTHORIZED", value: E_STATUS_ORDERS.AUTHORIZED },
-            { label: "PARTIALLY_PAID", value: E_STATUS_ORDERS.PARTIALLY_PAID },
-            { label: "PARTIALLY_REFUNDED", value: E_STATUS_ORDERS.PARTIALLY_REFUNDED },
-            { label: "VOIDED", value: E_STATUS_ORDERS.VOIDED },
-            { label: "PAID", value: E_STATUS_ORDERS.PAID },
-            { label: "REFUNDED", value: E_STATUS_ORDERS.REFUNDED },
-            { label: "EXPIRED", value: E_STATUS_ORDERS.EXPIRED },
-          ]}
-          selected={financialStatus || []}
-          onChange={handleFinancialStatusChange}
-          allowMultiple
-        />
-      ),
-      shortcut: true,
-    },
-    {
-      key: "dateRange",
-      label: "Date range",
-      filter: (
-        <DatePicker
-          month={month}
-          year={year}
-          onChange={setSelectedDates}
-          onMonthChange={handleMonthChange}
-          selected={selectedDates}
-          multiMonth
-          allowRange
-        />
-      ),
-      shortcut: true,
-    },
+  const filters: any = [
+    // {
+    //   key: "financialStatus",
+    //   label: "Status like",
+    //   filter: (
+    //     <ChoiceList
+    //       title="Financial Status"
+    //       titleHidden
+    //       choices={[
+    //         { label: "DRAFT", value: E_STATUS_PRODUCTS.draft },
+    //         { label: "ACTIVE", value: E_STATUS_PRODUCTS.active },
+    //       ]}
+    //       selected={financialStatus || []}
+    //       onChange={handleFinancialStatusChange}
+    //       allowMultiple
+    //     />
+    //   ),
+    //   shortcut: true,
+    // },
   ];
 
   const appliedFilters: IndexFiltersProps["appliedFilters"] = [];
-  if (financialStatus && !isEmpty(financialStatus)) {
-    const key = "financialStatus";
-    appliedFilters.push({
-      key,
-      label: disambiguateLabel(key, financialStatus),
-      onRemove: handleFinancialStatusRemove,
-    });
-  }
-  if (selectedDates) {
-    const key = "dateRange";
-    appliedFilters.push({
-      key,
-      label: disambiguateLabel(key, [selectedDates.start, selectedDates.end]),
-      onRemove: handleDateValueRemove,
-    });
-  }
+  // if (financialStatus && !isEmpty(financialStatus)) {
+  //   const key = "financialStatus";
+  //   appliedFilters.push({
+  //     key,
+  //     label: disambiguateLabel(key, financialStatus),
+  //     onRemove: handleFinancialStatusRemove,
+  //   });
+  // }
 
   const resourceName = {
-    singular: "order",
-    plural: "orders",
+    singular: "product",
+    plural: "products",
   };
+
+  const findAppsById = (id: string) => {
+    if(!data.dataApps)
+      return [];
+
+    return data.dataApps?.data?.products?.nodes?.find((n:any)=>n?.id === id)
+        ?.channelPublications?.nodes ?? []
+  }
+
+  const findMarketsById = (id: string) => {
+    if(!data.dataMarkets)
+      return [];
+
+    return data.dataMarkets?.data?.products?.nodes?.find((n:any)=>n?.id === id)
+        ?.channelPublications?.nodes ?? []
+  }
 
   const rowMarkup = useCallback(() => {
     if (!data || nodes?.length === 0)
@@ -430,46 +409,58 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
         </IndexTable.Row>
       );
 
-    return nodes?.map((o: any, index: number) => {
-      const address =
-        o.displayAddress && o.displayAddress.formatted
-          ? o.displayAddress.formatted.toReversed().join(", ")
-          : "";
+    return nodes?.map((p: any, index: number) => {
+      const apps = findAppsById(p.id);
+      const markets = findMarketsById(p.id);
+
       return (
-        <IndexTable.Row id={o.id} key={o.id} position={index}>
+        <IndexTable.Row id={p.id} key={p.id} position={index} >
+          <IndexTable.Cell>
+            <Avatar source={p?.featuredImage?.url ?? DEFAULT_IMAGE}/>
+          </IndexTable.Cell>
           <IndexTable.Cell>
             <Text variant="bodyMd" fontWeight="bold" as="span">
-              <Link to={`/orders/${o.id.split("/").at(-1)}`}>{o.name}</Link>
+              <HorizontalStack gap={"5"} blockAlign={"center"}>
+              <Link to={`/products/${p.id.split("/").at(-1)}`}>{p.title}</Link>
+                <span className={"view_icon"}>
+                  <Tooltip content={"Preview on Online Store"}>
+                    <Text as={'span'}>
+                      <ViewMinor height={"20"} display={"flex"} width={"20"} onClick={()=>openNewTab(p?.onlineStorePreviewUrl)}/>
+                    </Text>
+                  </Tooltip>
+                </span>
+              </HorizontalStack>
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell>
+            <Text as={"h3"} alignment={"start"}>
+              <Badge status={p.status === 'ACTIVE' ? 'success' : 'info'}>{capitalize(p.status)}</Badge>
+            </Text>
+          </IndexTable.Cell>
+          <IndexTable.Cell>
+            <Text as={"h3"} alignment={"start"}>
+              {p?.tracksInventory ? `${p?.totalInventory} in stock` : 'Inventory not tracked'}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              $ {o.totalPriceSet?.shopMoney?.amount}
+              {loadings.dataAppsLoading ? <Spinner/> : apps?.length}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              {o.subtotalLineItemsQuantity}
+              {loadings.dataMarketsLoading ? <Spinner/> : markets?.length}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <Box maxWidth={"250px"}>
-              <Tooltip content={address} active={address.length > 40}>
-                <Text as={"h3"} truncate breakWord alignment={"start"}>
-                  {address}
-                </Text>
-              </Tooltip>
-            </Box>
+            <Text as={"h3"} alignment={"start"}>
+              {p.productType}
+            </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <Tooltip content={moment(o.createdAt).format("MM-DD-yyyy HH:mm")}>
-              <Text as={"h3"} alignment={"center"}>
-                {moment(o.createdAt).format("MM-DD-yyyy")}
-              </Text>
-            </Tooltip>
-          </IndexTable.Cell>
-          <IndexTable.Cell>
-            <FinancialStatus status={o.displayFinancialStatus} />
+            <Text as={"h3"} alignment={"start"}>
+              {p.vendor}
+            </Text>
           </IndexTable.Cell>
         </IndexTable.Row>
       );
@@ -481,18 +472,8 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
     const query: string[] = [];
 
     const name = queryValue;
-    const dates = selectedDates;
-    const status = financialStatus;
 
     if (name) query.push(`name:${name}*`);
-    if (dates)
-      query.push(
-        `created_at:>=${moment(dates.start).toISOString()} created_at:<=${moment(dates.end).toISOString()}`
-      );
-    if (status?.length)
-    {
-      query.push(`(${status.map(s=>`financial_status:${s}`).join(' OR ')})`)
-    }
 
     return {
       sort: _sortData.at(0),
@@ -502,8 +483,8 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
       after: cursor?.variant === "after" ? cursor.cursor : undefined,
       before: cursor?.variant === "before" ? cursor.cursor : undefined,
       query: query.length > 0 ? query.join(" ") : undefined,
-    } as I_OrdersGetDto;
-  }, [sortSelected, queryValue, cursor, selected, selectedDates, financialStatus]);
+    } as I_ProductsGetDto;
+  }, [sortSelected, queryValue, cursor, selected]);
 
   const handleNext = () => {
     setCursor({ cursor: pageInfo?.endCursor, variant: "after" });
@@ -539,19 +520,19 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
           onClearAll={handleFiltersClearAll}
           mode={mode}
           setMode={setMode}
-          loading={isLoading}
+          loading={loadings.allDataLoading}
         />
         <IndexTable
           selectable={false}
-          loading={isLoading}
+          loading={loadings.allDataLoading}
           headings={headings}
           hasZebraStriping={true}
           resourceName={resourceName}
-          itemCount={data?.data?.orders?.nodes?.length ?? 0}
+          itemCount={nodes?.length ?? 0}
         >
           {rowMarkup()}
-          <tr className={cl.pagination}>
-            <td colSpan={6} align={"center"}>
+          <tr className={"pagination"}>
+            <td colSpan={8} align={"center"}>
               <Pagination
                 type={"table"}
                 hasNext={pageInfo?.hasNextPage}
@@ -567,4 +548,4 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
   );
 };
 
-export default OrdersTable;
+export default ProductsTable;

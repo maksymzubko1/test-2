@@ -17,6 +17,7 @@ import { DEFAULT_IMAGE, DEFAULT_URL } from "../../../constants/constants";
 import { ViewMinor } from "@shopify/polaris-icons";
 import moment from "moment";
 import {useShop} from "../../../hooks";
+import {openNewTab} from "../../../utils/openNewTab";
 
 interface I_Props {
   order: any;
@@ -27,11 +28,7 @@ export const OrderContent = ({ order }: I_Props) => {
   const DEFAULT_URL_SHOP = `${DEFAULT_URL}/${state.shop.replace('.myshopify.com', '')}`;
 
   const handleClick = useCallback(() => {
-    const a = document.createElement("a");
-    a.href = `${DEFAULT_URL_SHOP}/orders/${id}`;
-    a.target = "_blank";
-    a.click();
-    a.remove();
+    openNewTab(`${DEFAULT_URL_SHOP}/orders/${id}`)
   }, [state])
 
   const {

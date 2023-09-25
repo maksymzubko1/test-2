@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Page, Text, VerticalStack } from "@shopify/polaris";
 import { useAuthenticatedFetch } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
-import { GET_ORDERS_QUERY } from "../../graphql/orders.graphql";
+import { GET_ORDERS_QUERY } from "../../graphql/orders/orders.graphql";
 import { I_Default } from "../../graphql/default.interface";
-import { E_SORT, I_OrdersGetDto } from "../../graphql/orders.interfaces";
+import { E_SORT_ORDERS, I_OrdersGetDto } from "../../graphql/orders/orders.interfaces";
 import OrdersTable from "./OrdersTable";
 import { useToast } from "@shopify/app-bridge-react";
 
@@ -32,7 +32,7 @@ function useGetOrders(data: I_OrdersGetDto) {
 
 export const Orders = () => {
   const [options, setOptions] = useState<I_OrdersGetDto>({
-    sort: E_SORT.createdAt,
+    sort: E_SORT_ORDERS.createdAt,
     first: 10,
     reverse: false,
   });

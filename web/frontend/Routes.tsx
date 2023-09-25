@@ -6,6 +6,7 @@ import { Home } from "./pages/Home/Home";
 import { Orders } from "./pages/Orders/Orders";
 import Settings from "./pages/settings";
 import { SingleOrder } from "./pages/Orders/SingleOrder/SingleOrder";
+import {Products} from "./pages/Products/Products";
 
 export type Route = {
   [key: string]: ComponentType;
@@ -14,6 +15,7 @@ export type Route = {
 export enum E_Routes {
   home = "/",
   orders = "/orders",
+  products = "/products",
 }
 
 export default function Routes(): JSX.Element {
@@ -22,6 +24,7 @@ export default function Routes(): JSX.Element {
       <Route path={"/"} element={<MainLayout />}>
         <Route path={"/"} element={<Home />} />
         <Route path={"/orders"} element={<Orders />} />
+        <Route path={"/products"} element={<Products />} />
         <Route path={"/orders/:id"} element={<SingleOrder />} />
       </Route>
       <Route path={"/settings"} element={<Settings />} />

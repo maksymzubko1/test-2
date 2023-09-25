@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Page, Spinner, Text } from "@shopify/polaris";
 import { useAuthenticatedFetch } from "../../../hooks";
 import { useQuery } from "@tanstack/react-query";
-import { GET_ORDER } from "../../../graphql/orders.graphql";
+import { GET_ORDER } from "../../../graphql/orders/orders.graphql";
 import { I_Default } from "../../../graphql/default.interface";
 import { useToast } from "@shopify/app-bridge-react";
 import { useLocation, useNavigate } from "react-router-dom";

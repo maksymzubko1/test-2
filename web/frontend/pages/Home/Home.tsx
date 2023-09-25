@@ -1,12 +1,12 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
-import { E_SORT, I_OrdersGetDto } from "../../graphql/orders.interfaces";
+import { E_SORT_ORDERS, I_OrdersGetDto } from "../../graphql/orders/orders.interfaces";
 import { I_Default } from "../../graphql/default.interface";
 import {
   GET_ORDERS_QUERY,
   GET_ORDERS_TOP5,
-} from "../../graphql/orders.graphql";
+} from "../../graphql/orders/orders.graphql";
 // @ts-ignore
 import { LineChart, ColumnChart } from "react-chartkick";
 import "chartkick/chart.js";
@@ -33,7 +33,7 @@ function useOrders() {
     const body = {
       query: GET_ORDERS_QUERY,
       params: {
-        sort: E_SORT.createdAt,
+        sort: E_SORT_ORDERS.createdAt,
         first: 50,
         query: `createdAt:=${nowDate.getFullYear()}-${nowDate.getMonth()}`,
       },

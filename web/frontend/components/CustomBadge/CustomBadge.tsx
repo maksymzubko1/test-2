@@ -7,7 +7,7 @@ import {
   Progress,
   Status,
 } from "@shopify/polaris/build/ts/src/components/Badge/types";
-import { E_ALL_STATUSES } from "../../graphql/orders.interfaces";
+import { E_ALL_STATUSES_ORDERS } from "../../graphql/orders/orders.interfaces";
 import {
   MarkFulfilledMinor,
   MarkPaidMinor,
@@ -18,26 +18,26 @@ import {
 function getStatusBadge(status: string, inOrder = false): Status {
   if (!inOrder) {
     switch (status.toLowerCase()) {
-      case E_ALL_STATUSES.PAID:
+      case E_ALL_STATUSES_ORDERS.PAID:
         return "enabled-experimental";
-      case E_ALL_STATUSES.EXPIRED:
+      case E_ALL_STATUSES_ORDERS.EXPIRED:
         return "warning";
-      case E_ALL_STATUSES.UNFULFILLED:
+      case E_ALL_STATUSES_ORDERS.UNFULFILLED:
         return "attention";
-      case E_ALL_STATUSES.FULFILLED:
+      case E_ALL_STATUSES_ORDERS.FULFILLED:
         return "enabled-experimental";
       default:
         return "warning";
     }
   } else {
     switch (status.toLowerCase()) {
-      case E_ALL_STATUSES.PAID:
+      case E_ALL_STATUSES_ORDERS.PAID:
         return "success";
-      case E_ALL_STATUSES.EXPIRED:
+      case E_ALL_STATUSES_ORDERS.EXPIRED:
         return "warning";
-      case E_ALL_STATUSES.UNFULFILLED:
+      case E_ALL_STATUSES_ORDERS.UNFULFILLED:
         return "attention";
-      case E_ALL_STATUSES.FULFILLED:
+      case E_ALL_STATUSES_ORDERS.FULFILLED:
         return "success";
       default:
         return "warning";
@@ -47,11 +47,11 @@ function getStatusBadge(status: string, inOrder = false): Status {
 
 function getIconBadge(status: string) {
   switch (status.toLowerCase()) {
-    case E_ALL_STATUSES.FULFILLED:
+    case E_ALL_STATUSES_ORDERS.FULFILLED:
       return MarkFulfilledMinor;
-    case E_ALL_STATUSES.UNFULFILLED:
+    case E_ALL_STATUSES_ORDERS.UNFULFILLED:
       return UnfulfilledMajor;
-    case E_ALL_STATUSES.PAID:
+    case E_ALL_STATUSES_ORDERS.PAID:
       return MarkPaidMinor;
     default:
       return PinMinor;
@@ -60,13 +60,13 @@ function getIconBadge(status: string) {
 
 function getProgressBadge(status: string): Progress {
   switch (status.toLowerCase()) {
-    case E_ALL_STATUSES.FULFILLED:
+    case E_ALL_STATUSES_ORDERS.FULFILLED:
       return "complete";
-    case E_ALL_STATUSES.PAID:
+    case E_ALL_STATUSES_ORDERS.PAID:
       return "complete";
-    case E_ALL_STATUSES.PARTIALLY_PAID:
+    case E_ALL_STATUSES_ORDERS.PARTIALLY_PAID:
       return "partiallyComplete";
-    case E_ALL_STATUSES.PARTIALLY_FULFILLED:
+    case E_ALL_STATUSES_ORDERS.PARTIALLY_FULFILLED:
       return "partiallyComplete";
     default:
       return "incomplete";

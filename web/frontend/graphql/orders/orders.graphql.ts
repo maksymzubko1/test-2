@@ -1,6 +1,6 @@
 export const GET_ORDERS_QUERY = `
- query getOrders($sort:OrderSortKeys!, $query:String, $lastCursor:String, $first: Int!, $reverse:Boolean) {
-    orders(sortKey: $sort, query: $query, after: $lastCursor, first: $first, reverse: $reverse) {
+ query getOrders($sort:OrderSortKeys!, $query:String, $after:String, $before:String, $first: Int, $last: Int, $reverse:Boolean) {
+    orders(sortKey: $sort, query: $query, after: $after, before: $before, last: $last, first: $first, reverse: $reverse) {
       nodes{
           id
           name

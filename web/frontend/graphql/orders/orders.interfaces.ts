@@ -1,13 +1,14 @@
 export interface I_OrdersGetDto {
   query?: string;
-  sort: E_SORT | string;
+  sort: E_SORT_ORDERS | string;
   reverse: boolean;
-  first: number;
+  first?: number;
+  last?: number;
   after?: string;
   before?: string;
 }
 
-export enum E_STATUS {
+export enum E_STATUS_ORDERS {
   PENDING = "pending",
   AUTHORIZED = "authorized",
   PARTIALLY_PAID = "partially_paid",
@@ -18,7 +19,7 @@ export enum E_STATUS {
   EXPIRED = "expired",
 }
 
-export enum E_ALL_STATUSES {
+export enum E_ALL_STATUSES_ORDERS {
   PENDING = "pending",
   AUTHORIZED = "authorized",
   PARTIALLY_PAID = "partially_paid",
@@ -34,7 +35,7 @@ export enum E_ALL_STATUSES {
   ON_HOLD = "on_hold",
 }
 
-export enum E_SORT {
+export enum E_SORT_ORDERS {
   createdAt = "CREATED_AT",
   amount = "TOTAL_PRICE",
   subtotalLineItemsQuantity = "TOTAL_ITEMS_QUANTITY",

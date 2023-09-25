@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Frame, Navigation } from "@shopify/polaris";
 import { useLocation, useNavigate } from "react-router-dom";
-import { HomeMinor, OrdersMinor } from "@shopify/polaris-icons";
+import {HomeMinor, OrdersMinor, ProductsMinor} from "@shopify/polaris-icons";
 import { ItemProps } from "@shopify/polaris/build/ts/src/components/Navigation/types";
 
 import "./style.module.css";
@@ -30,6 +30,15 @@ export const Sidebar = () => {
       icon: OrdersMinor,
       onClick: () => {
         navigate(E_Routes.orders);
+      },
+    },
+    {
+      selected: location.pathname === E_Routes.products,
+      truncateText: true,
+      label: "Products",
+      icon: ProductsMinor,
+      onClick: () => {
+        navigate(E_Routes.products);
       },
     },
   ];

@@ -1,0 +1,18 @@
+.Polaris-IndexTable__ScrollBarContainer {
+    display: none !important;
+}
+
+.pagination {
+    width: 100%;
+}
+
+.view_icon{
+    opacity: 0;
+    transition: all .3s ease-in-out;
+    cursor: pointer;
+}
+
+.Polaris-IndexTable__TableRow--hovered .view_icon{
+    opacity: 1;
+    /*transition: visibility .5s ease-in-out;*/
+}
