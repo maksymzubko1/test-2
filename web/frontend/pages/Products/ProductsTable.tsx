@@ -1,27 +1,33 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { NonEmptyArray } from "@shopify/polaris/build/ts/src/types";
-import { IndexTableHeading } from "@shopify/polaris/build/ts/src/components/IndexTable";
+import React, {useCallback, useEffect, useState} from "react";
+import {NonEmptyArray} from "@shopify/polaris/build/ts/src/types";
+import {IndexTableHeading, IndexTableSortDirection} from "@shopify/polaris/build/ts/src/components/IndexTable";
 import {
-  Avatar, Badge,
-  Frame, HorizontalStack,
+  ActionListItemDescriptor,
+  Avatar,
+  Badge,
+  ChoiceList,
+  Frame,
+  HorizontalStack,
   IndexFilters,
   IndexFiltersProps,
   IndexTable,
   LegacyCard,
-  Pagination, Spinner,
+  Pagination,
+  Spinner,
   TabProps,
   Text,
+  TextField,
   Tooltip,
   useSetIndexFiltersMode,
 } from "@shopify/polaris";
-import {Link, useNavigate} from "react-router-dom";
+import {Link} from "react-router-dom";
 import "./style.css";
-import moment from "moment";
 import {EditMinor, ViewMinor} from "@shopify/polaris-icons";
-import {E_SORT_PRODUCTS, I_ProductsGetDto} from "../../graphql/products/products.interfaces";
+import {E_SORT_PRODUCTS, E_STATUS_PRODUCTS, I_ProductsGetDto} from "../../graphql/products/products.interfaces";
 import {DEFAULT_IMAGE} from "../../constants/constants";
 import {capitalize} from "../../utils/capitalize";
 import {openNewTab} from "../../utils/openNewTab";
+import {PopoverWithActionList} from "../../components/Popover/Popover";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "", alignment: "start" },
@@ -36,18 +42,45 @@ const headings: NonEmptyArray<IndexTableHeading> = [
 
 function disambiguateLabel(key: string, value: string | any[]): string {
   switch (key) {
-    case "dateRange":
-      const datesEquals = moment(value[0]).isSame(moment(value[1]));
-      if (datesEquals) return `Date equal ${moment(value[0]).format("MM-DD-yyyy")}`;
-      return `Date range is between ${moment(value[0]).format(
-        "MM-DD-yyyy"
-      )} and ${moment(value[1]).format("MM-DD-yyyy")}`;
-    case "financialStatus":
+    case "status":
       return `Status like ${(value as string[])
         .map((val) => ` ${val}`)
         .join(", ")}`;
+    case "vendor":
+      return `Vendor like ${value}`;
+    case "tagged":
+      return `Tagged with ${value}`;
+    case "type":
+      return `Product type like ${value}`;
     default:
       return value as string;
+  }
+}
+
+function convertIndexColumnToSort(index: number) {
+  console.log(index)
+  switch (index){
+    case 1:
+      return E_SORT_PRODUCTS.title;
+    case 3:
+      return E_SORT_PRODUCTS.inventory;
+    case 6:
+      return E_SORT_PRODUCTS.productType;
+    case 7:
+      return E_SORT_PRODUCTS.vendor;
+  }
+}
+
+function convertSortToIndexColumn(sort: E_SORT_PRODUCTS) {
+  switch (sort){
+    case E_SORT_PRODUCTS.title:
+      return 1;
+    case E_SORT_PRODUCTS.inventory:
+      return 3;
+    case E_SORT_PRODUCTS.productType:
+      return 6;
+    case E_SORT_PRODUCTS.vendor:
+      return 7;
   }
 }
 
@@ -69,13 +102,19 @@ interface I_Storage {
   filterName: string;
   sortSelected: string[];
   queryString: string;
-  financialStatus: string[];
+  vendor: string;
+  tagged: string;
+  type: string;
+  status: string[];
 }
 
 const DEFAULT_ITEM = {
   filterName: "All",
   queryString: "",
-  financialStatus: [],
+  vendor: "",
+  tagged: "",
+  type: "",
+  status: [],
   sortSelected: [`${E_SORT_PRODUCTS.createdAt} asc`],
 } as I_Storage;
 
@@ -100,7 +139,13 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     nodes: undefined,
     pageInfo: undefined,
   };
-  const navigate = useNavigate();
+  const [sort, setSort] = useState<{column: number, sort: "ascending" | "descending"}>(undefined)
+  const [vendor, setVendor] = useState("")
+  const [tagged, setTagged] = useState("")
+  const [type, setType] = useState("")
+  const [status, setStatus] = useState<string[] | undefined>(
+      undefined
+  );
   const [selected, setSelected] = useState(0);
   const [cursor, setCursor] = useState<
     { cursor: string; variant: "before" | "after" } | undefined
@@ -186,6 +231,10 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     setManualSetup(true);
     const itemFromStorage = storage.find((s, i) => i === selected);
     setQueryValue(itemFromStorage.queryString);
+    setStatus(itemFromStorage.status);
+    setType(itemFromStorage.type);
+    setTagged(itemFromStorage.tagged);
+    setVendor(itemFromStorage.vendor);
     setSortSelected(itemFromStorage.sortSelected);
     setManualSetup(false);
   }, [selected, storage, itemStrings]);
@@ -206,13 +255,17 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     setSelected(0);
   };
 
-  const duplicateView = async (name: string) => {
+  const duplicateView = (name: string) => {
     setStorage((prev) => {
       const prevStorage = [...prev];
       prevStorage.push({
         filterName: name,
         sortSelected,
         queryString: queryValue,
+        tagged,
+        type,
+        vendor,
+        status
       } as I_Storage);
       return prevStorage;
     });
@@ -275,6 +328,10 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
         filterName: value,
         sortSelected,
         queryString: queryValue,
+        status,
+        vendor,
+        type,
+        tagged
       } as I_Storage);
       return prevStorage;
     });
@@ -282,6 +339,8 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
   };
 
   const handleSort = (e: string[]) => {
+    const arr = e[0].split(' ');
+    setSort({column: convertSortToIndexColumn(arr[0] as E_SORT_PRODUCTS), sort: arr[1] === 'asc' ? 'ascending' : 'descending'});
     setSortSelected(e);
 
     setStorage((prev) => {
@@ -308,6 +367,10 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
         if (prevStorageItem.filterName === itemStrings[selected]) {
           prevStorageItem.queryString = queryValue;
           prevStorageItem.sortSelected = sortSelected;
+          prevStorageItem.type = type;
+          prevStorageItem.vendor = vendor;
+          prevStorageItem.tagged = tagged;
+          prevStorageItem.status = status;
           break;
         }
       }
@@ -335,63 +398,167 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     (value: string) => setQueryValue(value),
     []
   );
+  const handleChangeVendor = useCallback(
+      (value: string) => setVendor(value),
+      []
+  );
+  const handleChangeType = useCallback(
+      (value: string) => setType(value),
+      []
+  );
+  const handleChangeTagged = useCallback(
+      (value: string) => setTagged(value),
+      []
+  );
+  const handleChangeStatus = useCallback(
+      (value: string[]) => setStatus(value),
+      []
+  );
   const handleQueryValueRemove = useCallback(() => setQueryValue(""), []);
+  const handleTypeValueRemove = useCallback(() => setType(""), []);
+  const handleVendorValueRemove = useCallback(() => setVendor(""), []);
+  const handleTaggedValueRemove = useCallback(() => setTagged(""), []);
+  const handleStatusValueRemove = useCallback(() => setStatus(undefined), []);
   const handleFiltersClearAll = useCallback(() => {
     handleQueryValueRemove();
+    handleStatusValueRemove();
+    handleTypeValueRemove();
+    handleVendorValueRemove();
+    handleTaggedValueRemove();
   }, [
     handleQueryValueRemove,
+    handleStatusValueRemove,
+    handleTypeValueRemove,
+    handleVendorValueRemove,
+    handleTaggedValueRemove
   ]);
 
   const filters: any = [
-    // {
-    //   key: "financialStatus",
-    //   label: "Status like",
-    //   filter: (
-    //     <ChoiceList
-    //       title="Financial Status"
-    //       titleHidden
-    //       choices={[
-    //         { label: "DRAFT", value: E_STATUS_PRODUCTS.draft },
-    //         { label: "ACTIVE", value: E_STATUS_PRODUCTS.active },
-    //       ]}
-    //       selected={financialStatus || []}
-    //       onChange={handleFinancialStatusChange}
-    //       allowMultiple
-    //     />
-    //   ),
-    //   shortcut: true,
-    // },
+    {
+      key: "vendor",
+      label: "Product vendor",
+      filter: (
+        <TextField
+          label=""
+          value={vendor || ""}
+          onChange={handleChangeVendor}
+         autoComplete={"off"}/>
+      ),
+      shortcut: true,
+    },
+    {
+      key: "tagged",
+      label: "Tagged with",
+      filter: (
+          <TextField
+              label=""
+              value={tagged || ""}
+              onChange={handleChangeTagged}
+              autoComplete={"off"}/>
+      ),
+      shortcut: true,
+    },
+    {
+      key: "type",
+      label: "Product type",
+      filter: (
+          <TextField
+              label=""
+              value={type || ""}
+              onChange={handleChangeType}
+              autoComplete={"off"}/>
+      ),
+      shortcut: true,
+    },
+    {
+      key: "status",
+      label: "Status like",
+      filter: (
+          <ChoiceList
+              title="Status"
+              titleHidden
+              choices={[
+                { label: E_STATUS_PRODUCTS.active, value: E_STATUS_PRODUCTS.active },
+                { label: E_STATUS_PRODUCTS.draft, value: E_STATUS_PRODUCTS.draft },
+              ]}
+              selected={status || []}
+              onChange={handleChangeStatus}
+              allowMultiple
+          />
+      ),
+      shortcut: true,
+    },
   ];
 
   const appliedFilters: IndexFiltersProps["appliedFilters"] = [];
-  // if (financialStatus && !isEmpty(financialStatus)) {
-  //   const key = "financialStatus";
-  //   appliedFilters.push({
-  //     key,
-  //     label: disambiguateLabel(key, financialStatus),
-  //     onRemove: handleFinancialStatusRemove,
-  //   });
-  // }
+  if (status && !isEmpty(status)) {
+    const key = "status";
+    appliedFilters.push({
+      key,
+      label: disambiguateLabel(key, status),
+      onRemove: handleStatusValueRemove,
+    });
+  }
+  if (vendor && !isEmpty(vendor)) {
+    const key = "vendor";
+    appliedFilters.push({
+      key,
+      label: disambiguateLabel(key, vendor),
+      onRemove: handleVendorValueRemove,
+    });
+  }
+  if (type && !isEmpty(type)) {
+    const key = "type";
+    appliedFilters.push({
+      key,
+      label: disambiguateLabel(key, type),
+      onRemove: handleTypeValueRemove,
+    });
+  }
+  if (tagged && !isEmpty(tagged)) {
+    const key = "tagged";
+    appliedFilters.push({
+      key,
+      label: disambiguateLabel(key, tagged),
+      onRemove: handleTaggedValueRemove,
+    });
+  }
 
   const resourceName = {
     singular: "product",
     plural: "products",
   };
 
-  const findAppsById = (id: string) => {
+  const findAppsById = (id: string): ActionListItemDescriptor[] => {
     if(!data.dataApps)
       return [];
 
-    return data.dataApps?.data?.products?.nodes?.find((n:any)=>n?.id === id)
+    const apps = data.dataApps?.data?.products?.nodes?.find((n:any)=>n?.id === id)
         ?.channelPublications?.nodes ?? []
+
+    const preparedApps = apps
+        .map((m:any)=>{
+          const app = m.publication;
+          const result: ActionListItemDescriptor = {active: true, variant: "menu", content: app.name}
+          return result;
+        })
+    return preparedApps;
   }
 
-  const findMarketsById = (id: string) => {
+  const findMarketsById = (id: string):  ActionListItemDescriptor[] => {
     if(!data.dataMarkets)
       return [];
 
-    return data.dataMarkets?.data?.products?.nodes?.find((n:any)=>n?.id === id)
-        ?.channelPublications?.nodes ?? []
+    const markets = data.dataMarkets?.data?.products?.nodes?.find((n:any)=>n?.id === id)
+        ?.channelPublications?.nodes ?? [];
+
+    const preparedMarkets = markets
+        .map((m:any)=>{
+          const market = m.publication.catalog.markets.nodes[0];
+          const result: ActionListItemDescriptor = {active: market.enabled, variant: "menu", content: market.name}
+          return result;
+        })
+    return preparedMarkets;
   }
 
   const rowMarkup = useCallback(() => {
@@ -438,18 +605,22 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <Text as={"h3"} alignment={"start"}>
+            <Text as={"h3"} color={p?.tracksInventory && p?.totalInventory < 0 ? 'critical' : 'subdued'} alignment={"start"}>
               {p?.tracksInventory ? `${p?.totalInventory} in stock` : 'Inventory not tracked'}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              {loadings.dataAppsLoading ? <Spinner/> : apps?.length}
+              {loadings.dataAppsLoading ? <Spinner/> :
+                  <PopoverWithActionList items={apps} text={apps?.length.toString()}/>
+              }
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              {loadings.dataMarketsLoading ? <Spinner/> : markets?.length}
+              {loadings.dataMarketsLoading ? <Spinner/> :
+                <PopoverWithActionList items={markets} text={markets?.length.toString()}/>
+              }
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
@@ -471,9 +642,14 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     const _sortData = sortSelected.at(-1).split(" ");
     const query: string[] = [];
 
-    const name = queryValue;
+    const title = queryValue;
 
-    if (name) query.push(`name:${name}*`);
+    if (title) query.push(`title:${title}*`);
+    if (vendor) query.push(`vendor:${vendor}*`);
+    if (type) query.push(`product_type:${type}*`);
+    if (tagged) query.push(`tag:${tagged}*`);
+    if (status?.length)
+      query.push(`(${status.map(s=>`status:${s}`).join(' OR ')})`)
 
     return {
       sort: _sortData.at(0),
@@ -484,7 +660,7 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
       before: cursor?.variant === "before" ? cursor.cursor : undefined,
       query: query.length > 0 ? query.join(" ") : undefined,
     } as I_ProductsGetDto;
-  }, [sortSelected, queryValue, cursor, selected]);
+  }, [sortSelected, queryValue, cursor, selected, vendor, type, status, tagged]);
 
   const handleNext = () => {
     setCursor({ cursor: pageInfo?.endCursor, variant: "after" });
@@ -493,6 +669,11 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
   const handlePrevious = () => {
     setCursor({ cursor: pageInfo?.startCursor, variant: "before" });
   };
+
+  const onSort = (headingIndex: number, direction: IndexTableSortDirection) => {
+    setSort({column: headingIndex, sort: direction});
+    setSortSelected([`${convertIndexColumnToSort(headingIndex)} ${direction === 'ascending' ? 'asc' : 'desc'}`]);
+  }
 
   return (
     <Frame>
@@ -526,6 +707,11 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
           selectable={false}
           loading={loadings.allDataLoading}
           headings={headings}
+          sortDirection={sort?.sort}
+          sortColumnIndex={sort?.column}
+          onSort={onSort}
+          sortable={[false, true, false, true, false, false, true, true]}
+          // sortToggleLabels={}
           hasZebraStriping={true}
           resourceName={resourceName}
           itemCount={nodes?.length ?? 0}

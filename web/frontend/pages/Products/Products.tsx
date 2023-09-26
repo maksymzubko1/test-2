@@ -11,7 +11,7 @@ import {GET_PRODUCT_APPS, GET_PRODUCT_MARKETS, GET_PRODUCTS} from "../../graphql
 function useGetProducts(data: I_ProductsGetDto) {
     const fetch = useAuthenticatedFetch();
 
-    return useQuery([Object.entries(data)], async () => {
+    return useQuery(['products', Object.entries(data)], async () => {
         const body = {
             query: GET_PRODUCTS,
             params: data,
@@ -33,7 +33,7 @@ function useGetProducts(data: I_ProductsGetDto) {
 function useGetProductsApps(data: I_ProductsGetDto) {
     const fetch = useAuthenticatedFetch();
 
-    return useQuery([Object.entries(data)], async () => {
+    return useQuery(['apps',Object.entries(data)], async () => {
         const body = {
             query: GET_PRODUCT_APPS,
             params: data,
@@ -55,7 +55,7 @@ function useGetProductsApps(data: I_ProductsGetDto) {
 function useGetProductsMarkets(data: I_ProductsGetDto) {
     const fetch = useAuthenticatedFetch();
 
-    return useQuery([Object.entries(data)], async () => {
+    return useQuery(['markets',Object.entries(data)], async () => {
         const body = {
             query: GET_PRODUCT_MARKETS,
             params: data,
@@ -81,8 +81,8 @@ export const Products = () => {
         reverse: false,
     });
     const { data, isLoading, isError } = useGetProducts(options);
-    const { data:dataApps, isLoading:isLoadingApps, isError:isErrorApps } = useGetProducts(options);
-    const { data:dataMarkets, isLoading:isLoadingMarkets, isError:isErrorMarkets } = useGetProducts(options);
+    const { data:dataApps, isLoading:isLoadingApps, isError:isErrorApps } = useGetProductsApps(options);
+    const { data:dataMarkets, isLoading:isLoadingMarkets, isError:isErrorMarkets } = useGetProductsMarkets(options);
 
     const { show: showToast } = useToast();
 

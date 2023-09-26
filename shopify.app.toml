@@ -2,19 +2,19 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://cover-technician-routines-traditions.trycloudflare.com"
+application_url = "https://this-plus-trainers-substance.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products, write_orders, read_customers"
+scopes = "write_products, write_orders, read_customers, read_publications, read_markets"
 use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://cover-technician-routines-traditions.trycloudflare.com/auth/callback",
-  "https://cover-technician-routines-traditions.trycloudflare.com/auth/shopify/callback",
-  "https://cover-technician-routines-traditions.trycloudflare.com/api/auth/callback"
+  "https://this-plus-trainers-substance.trycloudflare.com/auth/callback",
+  "https://this-plus-trainers-substance.trycloudflare.com/auth/shopify/callback",
+  "https://this-plus-trainers-substance.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]
