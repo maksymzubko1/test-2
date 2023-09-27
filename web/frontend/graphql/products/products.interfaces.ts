@@ -8,6 +8,26 @@ export interface I_ProductsGetDto {
   before?: string;
 }
 
+export interface I_MutationProductDuplicate {
+  productId: string;
+  newTitle: string;
+  newStatus: E_STATUS_PRODUCTS;
+  copyImages: boolean;
+}
+
+export interface I_MutationProductArchive {
+  product: {
+    id: string;
+    status: E_STATUS_PRODUCTS;
+  }
+}
+
+export interface I_MutationProductDelete {
+  product: {
+    id: string;
+  }
+}
+
 export enum E_SORT_PRODUCTS {
   vendor = "VENDOR",
   title = "TITLE",
@@ -19,5 +39,6 @@ export enum E_SORT_PRODUCTS {
 
 export enum E_STATUS_PRODUCTS {
   draft = "DRAFT",
-  active = "ACTIVE"
+  active = "ACTIVE",
+  archived = "ARCHIVED"
 }

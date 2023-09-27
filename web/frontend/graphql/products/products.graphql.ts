@@ -123,3 +123,55 @@ export const GET_PRODUCTS = `query getProducts(
     }
   }
 }`
+
+export const GET_PRODUCT = `
+query getProduct($id:ID!){
+  product(id: $id) {
+    id
+    title
+    description
+    descriptionHtml
+    onlineStorePreviewUrl
+    status
+    featuredImage {
+      url
+    }
+  }
+}`
+
+export const DUPLICATE_PRODUCT = `
+mutation duplicateProduct($productId:ID!, $newTitle: String!, $newStatus:ProductStatus, $copyImages: Boolean){
+  productDuplicate(productId: $productId, newTitle: $newTitle, newStatus: $newStatus, includeImages: $copyImages){
+    newProduct{
+      id
+    }
+    userErrors{
+      field
+      message
+    }
+  }
+}`
+
+export const ARCHIVE_PRODUCT = `
+mutation archiveProduct($product:ProductInput!){
+  productUpdate(input:$product){
+    product{
+      id
+    }
+    userErrors{
+      field
+      message
+    }
+  }
+}`
+
+export const DELETE_PRODUCT = `
+mutation deleteProduct($product:ProductDeleteInput!){
+  productDelete(input:$product){
+    deletedProductId
+    userErrors{
+      field
+      message
+    }
+  }
+}`

@@ -11,8 +11,9 @@ export const Sidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const order = parseInt(location.pathname.split("/").at(-1));
-  const isSingleOrder = !Number.isNaN(order);
+  const id = parseInt(location.pathname.split("/").at(-1));
+  const isSingleOrder = !Number.isNaN(id) && location.pathname.includes('orders');
+  const isSingleProduct = !Number.isNaN(id) && location.pathname.includes('products');
 
   const pages: ItemProps[] = [
     {
@@ -43,14 +44,14 @@ export const Sidebar = () => {
     },
   ];
 
-  const currentPage = !isSingleOrder
+  const currentPage = !isSingleOrder && !isSingleProduct
     ? []
     : [
         {
           selected: true,
           truncateText: true,
-          label: `#${order}`,
-          icon: OrdersMinor,
+          label: `#${id}`,
+          icon: isSingleProduct ? ProductsMinor : OrdersMinor,
         },
       ];
 
@@ -61,6 +62,9 @@ export const Sidebar = () => {
           <Navigation.Section items={pages} />
           {isSingleOrder && (
             <Navigation.Section title={"Opened order"} items={currentPage} />
+          )}
+          {isSingleProduct && (
+              <Navigation.Section title={"Opened product"} items={currentPage} />
           )}
         </Navigation>
       </Box>

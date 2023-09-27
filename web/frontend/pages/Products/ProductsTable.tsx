@@ -28,6 +28,7 @@ import {DEFAULT_IMAGE} from "../../constants/constants";
 import {capitalize} from "../../utils/capitalize";
 import {openNewTab} from "../../utils/openNewTab";
 import {PopoverWithActionList} from "../../components/Popover/Popover";
+import {getBadgeStatus} from "./SingleProduct/SingleProduct";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "", alignment: "start" },
@@ -601,7 +602,7 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"start"}>
-              <Badge status={p.status === 'ACTIVE' ? 'success' : 'info'}>{capitalize(p.status)}</Badge>
+              <Badge status={getBadgeStatus(p.status)}>{capitalize(p.status)}</Badge>
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
