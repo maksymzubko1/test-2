@@ -1,6 +1,6 @@
 import { Outlet } from "react-router-dom";
 import { Header } from "./components/Header/Header";
-import { Box, Divider, Grid, VerticalStack } from "@shopify/polaris";
+import { Box, Grid, VerticalStack } from "@shopify/polaris";
 import { Sidebar } from "./components/Sidebar/Sidebar";
 import "./style.css";
 

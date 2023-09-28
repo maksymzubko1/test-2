@@ -6,9 +6,9 @@ import { Home } from "./pages/Home/Home";
 import { Orders } from "./pages/Orders/Orders";
 import Settings from "./pages/settings";
 import { SingleOrder } from "./pages/Orders/SingleOrder/SingleOrder";
-import {Products} from "./pages/Products/Products";
-import {UpdateSingleProduct} from "./pages/Products/SingleProduct/UpdateSingleProduct";
-import {CreateSingleProduct} from "./pages/Products/SingleProduct/CreateSingleProduct";
+import { Products } from "./pages/Products/Products";
+import { UpdateSingleProduct } from "./pages/Products/SingleProduct/UpdateSingleProduct";
+import { CreateSingleProduct } from "./pages/Products/SingleProduct/CreateSingleProduct";
 
 export type Route = {
   [key: string]: ComponentType;

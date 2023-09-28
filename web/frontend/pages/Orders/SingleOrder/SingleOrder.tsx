@@ -7,7 +7,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import "./style.css";
 import { E_Routes } from "../../../Routes";
 import { OrderContent } from "./OrderContent";
-import {queryOrderGet} from "../requests";
+import { queryOrderGet } from "../requests";
 
 function useGetOrder(id: number) {
   const fetch = useAuthenticatedFetch();

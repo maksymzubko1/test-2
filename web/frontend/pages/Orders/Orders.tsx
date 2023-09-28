@@ -2,16 +2,19 @@ import React, { useEffect, useState } from "react";
 import { Page, Text, VerticalStack } from "@shopify/polaris";
 import { useAuthenticatedFetch } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
-import { E_SORT_ORDERS, I_OrdersGetDto } from "../../graphql/orders/orders.interfaces";
+import {
+  E_SORT_ORDERS,
+  I_OrdersGetDto,
+} from "../../graphql/orders/orders.interfaces";
 import OrdersTable from "./OrdersTable";
 import { useToast } from "@shopify/app-bridge-react";
-import {queryOrdersGet} from "./requests";
+import { queryOrdersGet } from "./requests";
 
 function useGetOrders(data: I_OrdersGetDto) {
   const fetch = useAuthenticatedFetch();
 
   return useQuery([Object.entries(data)], async () => {
-    return await queryOrdersGet(fetch,data);
+    return await queryOrdersGet(fetch, data);
   });
 }
 

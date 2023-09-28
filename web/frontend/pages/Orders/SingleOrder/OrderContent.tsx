@@ -1,4 +1,4 @@
-import React, {useCallback, useId} from "react";
+import React, { useCallback, useId } from "react";
 import { getOrderDetails } from "../../../utils/orderDetails";
 import {
   Badge,
@@ -16,21 +16,24 @@ import { CustomBadge } from "../../../components/CustomBadge/CustomBadge";
 import { DEFAULT_IMAGE, DEFAULT_URL } from "../../../constants/constants";
 import { ViewMinor } from "@shopify/polaris-icons";
 import moment from "moment";
-import {useShop} from "../../../hooks";
-import {openNewTab} from "../../../utils/openNewTab";
-import {shopifyIdToNumber} from "../../../utils/shopifyIdToNumber";
+import { useShop } from "../../../hooks";
+import { openNewTab } from "../../../utils/openNewTab";
+import { shopifyIdToNumber } from "../../../utils/shopifyIdToNumber";
 
 interface I_Props {
   order: any;
 }
 export const OrderContent = ({ order }: I_Props) => {
-  const {state} = useShop()
+  const { state } = useShop();
 
-  const DEFAULT_URL_SHOP = `${DEFAULT_URL}/${state.shop.replace('.myshopify.com', '')}`;
+  const DEFAULT_URL_SHOP = `${DEFAULT_URL}/${state.shop.replace(
+    ".myshopify.com",
+    ""
+  )}`;
 
   const handleClick = useCallback(() => {
-    openNewTab(`${DEFAULT_URL_SHOP}/orders/${id}`)
-  }, [state])
+    openNewTab(`${DEFAULT_URL_SHOP}/orders/${id}`);
+  }, [state]);
 
   const {
     orderItems,
@@ -79,12 +82,16 @@ export const OrderContent = ({ order }: I_Props) => {
                         source={order.image?.url ?? DEFAULT_IMAGE}
                       />
                       <Text as={"p"} variant={"bodyLg"}>
-                        {isNaN(product_id) ? i.title : <Link
-                          url={`${DEFAULT_URL_SHOP}/products/${product_id}`}
-                          target={"_blank"}
-                        >
-                          {i.title}
-                        </Link>}
+                        {isNaN(product_id) ? (
+                          i.title
+                        ) : (
+                          <Link
+                            url={`${DEFAULT_URL_SHOP}/products/${product_id}`}
+                            target={"_blank"}
+                          >
+                            {i.title}
+                          </Link>
+                        )}
                       </Text>
                     </HorizontalStack>
                   </Grid.Cell>
@@ -114,7 +121,10 @@ export const OrderContent = ({ order }: I_Props) => {
                 variant={"bodyLg"}
                 as={"p"}
               >
-                <Link url={`${DEFAULT_URL_SHOP}/orders/${id}`} target={"_blank"}>
+                <Link
+                  url={`${DEFAULT_URL_SHOP}/orders/${id}`}
+                  target={"_blank"}
+                >
                   more...
                 </Link>
               </Text>
@@ -303,7 +313,11 @@ export const OrderContent = ({ order }: I_Props) => {
         <VerticalStack gap={"1"}>
           {shippingAddress.length ? (
             shippingAddress.map((o: string, index: number) => (
-              <Text key={`shipping-text-${o}${index}`} as={"p"} variant={"bodyLg"}>
+              <Text
+                key={`shipping-text-${o}${index}`}
+                as={"p"}
+                variant={"bodyLg"}
+              >
                 {o}
               </Text>
             ))
@@ -327,7 +341,11 @@ export const OrderContent = ({ order }: I_Props) => {
             </Text>
           ) : billingAddress.length ? (
             billingAddress.map((o: string, index: number) => (
-              <Text key={`billing-text-${o}${index}`} as={"p"} variant={"bodyLg"}>
+              <Text
+                key={`billing-text-${o}${index}`}
+                as={"p"}
+                variant={"bodyLg"}
+              >
                 {o}
               </Text>
             ))

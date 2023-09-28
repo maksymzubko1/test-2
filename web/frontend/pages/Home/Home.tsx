@@ -1,12 +1,6 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useAuthenticatedFetch } from "../../hooks";
 import { useQuery } from "@tanstack/react-query";
-import { E_SORT_ORDERS, I_OrdersGetDto } from "../../graphql/orders/orders.interfaces";
-import { I_Default } from "../../graphql/default.interface";
-import {
-  GET_ORDERS_QUERY,
-  GET_ORDERS_TOP5,
-} from "../../graphql/orders/orders.graphql";
 // @ts-ignore
 import { LineChart, ColumnChart } from "react-chartkick";
 import "chartkick/chart.js";
@@ -25,8 +19,8 @@ import { Link } from "react-router-dom";
 
 import "./style.module.css";
 import { useToast } from "@shopify/app-bridge-react";
-import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
-import {queryOrdersMonthGet, queryTop5OrdersGet} from "./requests";
+import { shopifyIdToNumber } from "../../utils/shopifyIdToNumber";
+import { queryOrdersMonthGet, queryTop5OrdersGet } from "./requests";
 
 function useOrders() {
   const fetch = useAuthenticatedFetch();

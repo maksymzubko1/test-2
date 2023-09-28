@@ -19,7 +19,7 @@ export interface I_MutationProductArchive {
   product: {
     id: string;
     status: E_STATUS_PRODUCTS;
-  }
+  };
 }
 
 export interface I_MutationProductUpdate {
@@ -28,7 +28,7 @@ export interface I_MutationProductUpdate {
     status: E_STATUS_PRODUCTS;
     title: string;
     descriptionHtml: string;
-  }
+  };
 }
 
 export interface I_MutationProductCreate {
@@ -36,13 +36,13 @@ export interface I_MutationProductCreate {
     status: E_STATUS_PRODUCTS;
     title: string;
     descriptionHtml: string;
-  }
+  };
 }
 
 export interface I_MutationProductDelete {
   product: {
     id: string;
-  }
+  };
 }
 
 export enum E_SORT_PRODUCTS {
@@ -57,5 +57,5 @@ export enum E_SORT_PRODUCTS {
 export enum E_STATUS_PRODUCTS {
   draft = "DRAFT",
   active = "ACTIVE",
-  archived = "ARCHIVED"
+  archived = "ARCHIVED",
 }

@@ -26,8 +26,8 @@ import cl from "./style.module.css";
 import moment from "moment";
 import { FinancialStatus } from "../../components/FinancialStatus/FinancialStatus";
 import { EditMinor } from "@shopify/polaris-icons";
-import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
-import {isEmpty} from "../../utils/isEmpty";
+import { shopifyIdToNumber } from "../../utils/shopifyIdToNumber";
+import { isEmpty } from "../../utils/isEmpty";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "Order", alignment: "start" },
@@ -42,7 +42,8 @@ function disambiguateLabel(key: string, value: string | any[]): string {
   switch (key) {
     case "dateRange":
       const datesEquals = moment(value[0]).isSame(moment(value[1]));
-      if (datesEquals) return `Date equal ${moment(value[0]).format("MM-DD-yyyy")}`;
+      if (datesEquals)
+        return `Date equal ${moment(value[0]).format("MM-DD-yyyy")}`;
       return `Date range is between ${moment(value[0]).format(
         "MM-DD-yyyy"
       )} and ${moment(value[1]).format("MM-DD-yyyy")}`;
@@ -154,10 +155,16 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
     const itemFromStorage = storage.find((s, i) => i === selected);
     setQueryValue(itemFromStorage.queryString);
 
-    const startDate = new Date(itemFromStorage?.selectedDates?.start ?? new Date())
-    const endDate = new Date(itemFromStorage?.selectedDates?.end ?? new Date())
+    const startDate = new Date(
+      itemFromStorage?.selectedDates?.start ?? new Date()
+    );
+    const endDate = new Date(itemFromStorage?.selectedDates?.end ?? new Date());
 
-    setSelectedDates(itemFromStorage?.selectedDates ? {start: startDate, end: endDate} : undefined);
+    setSelectedDates(
+      itemFromStorage?.selectedDates
+        ? { start: startDate, end: endDate }
+        : undefined
+    );
     setSortSelected(itemFromStorage.sortSelected);
     setFinancialStatus(itemFromStorage.financialStatus);
     setManualSetup(false);
@@ -355,7 +362,10 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
             { label: "PENDING", value: E_STATUS_ORDERS.PENDING },
             { label: "AUTHORIZED", value: E_STATUS_ORDERS.AUTHORIZED },
             { label: "PARTIALLY_PAID", value: E_STATUS_ORDERS.PARTIALLY_PAID },
-            { label: "PARTIALLY_REFUNDED", value: E_STATUS_ORDERS.PARTIALLY_REFUNDED },
+            {
+              label: "PARTIALLY_REFUNDED",
+              value: E_STATUS_ORDERS.PARTIALLY_REFUNDED,
+            },
             { label: "VOIDED", value: E_STATUS_ORDERS.VOIDED },
             { label: "PAID", value: E_STATUS_ORDERS.PAID },
             { label: "REFUNDED", value: E_STATUS_ORDERS.REFUNDED },
@@ -481,11 +491,14 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
     if (name) query.push(`name:${name}*`);
     if (dates)
       query.push(
-        `created_at:>=${moment(dates.start).toISOString()} created_at:<=${moment(dates.end).toISOString()}`
+        `created_at:>=${moment(
+          dates.start
+        ).toISOString()} created_at:<=${moment(dates.end).toISOString()}`
       );
-    if (status?.length)
-    {
-      query.push(`(${status.map(s=>`financial_status:${s}`).join(' OR ')})`)
+    if (status?.length) {
+      query.push(
+        `(${status.map((s) => `financial_status:${s}`).join(" OR ")})`
+      );
     }
 
     return {
@@ -497,7 +510,14 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
       before: cursor?.variant === "before" ? cursor.cursor : undefined,
       query: query.length > 0 ? query.join(" ") : undefined,
     } as I_OrdersGetDto;
-  }, [sortSelected, queryValue, cursor, selected, selectedDates, financialStatus]);
+  }, [
+    sortSelected,
+    queryValue,
+    cursor,
+    selected,
+    selectedDates,
+    financialStatus,
+  ]);
 
   const handleNext = () => {
     setCursor({ cursor: pageInfo?.endCursor, variant: "after" });

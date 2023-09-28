@@ -34,7 +34,7 @@ query getApps(
       }
     }
   }
-}`
+}`;
 
 export const GET_PRODUCT_MARKETS = `query getMarkets(
   $sort: ProductSortKeys!
@@ -81,7 +81,7 @@ export const GET_PRODUCT_MARKETS = `query getMarkets(
       }
     }
   }
-}`
+}`;
 
 export const GET_PRODUCTS = `query getProducts(
   $sort: ProductSortKeys!
@@ -123,7 +123,7 @@ export const GET_PRODUCTS = `query getProducts(
       hasPreviousPage
     }
   }
-}`
+}`;
 
 export const GET_PRODUCT = `
 query getProduct($id:ID!){
@@ -138,7 +138,7 @@ query getProduct($id:ID!){
       url
     }
   }
-}`
+}`;
 
 export const DUPLICATE_PRODUCT = `
 mutation duplicateProduct($productId:ID!, $newTitle: String!, $newStatus:ProductStatus, $copyImages: Boolean){
@@ -151,7 +151,7 @@ mutation duplicateProduct($productId:ID!, $newTitle: String!, $newStatus:Product
       message
     }
   }
-}`
+}`;
 
 export const ARCHIVE_PRODUCT = `
 mutation archiveProduct($product:ProductInput!){
@@ -164,7 +164,7 @@ mutation archiveProduct($product:ProductInput!){
       message
     }
   }
-}`
+}`;
 
 export const DELETE_PRODUCT = `
 mutation deleteProduct($product:ProductDeleteInput!){
@@ -175,7 +175,7 @@ mutation deleteProduct($product:ProductDeleteInput!){
       message
     }
   }
-}`
+}`;
 
 export const CREATE_PRODUCT = `
 mutation createProduct($product:ProductInput!){
@@ -188,7 +188,7 @@ mutation createProduct($product:ProductInput!){
       field
     }
   }
-}`
+}`;
 
 export const UPDATE_PRODUCT = `
 mutation updateProduct($product:ProductInput!){
@@ -201,4 +201,4 @@ mutation updateProduct($product:ProductInput!){
       message
     }
   }
-}`
+}`;

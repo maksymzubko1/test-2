@@ -1,4 +1,4 @@
-import {shopifyIdToNumber} from "./shopifyIdToNumber";
+import { shopifyIdToNumber } from "./shopifyIdToNumber";
 
 export function getOrderDetails(order: any) {
   if (!order) return {};

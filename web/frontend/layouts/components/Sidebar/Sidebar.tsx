@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Frame, Navigation } from "@shopify/polaris";
 import { useLocation, useNavigate } from "react-router-dom";
-import {HomeMinor, OrdersMinor, ProductsMinor} from "@shopify/polaris-icons";
+import { HomeMinor, OrdersMinor, ProductsMinor } from "@shopify/polaris-icons";
 import { ItemProps } from "@shopify/polaris/build/ts/src/components/Navigation/types";
 
 import "./style.module.css";
@@ -12,8 +12,10 @@ export const Sidebar = () => {
   const location = useLocation();
 
   const id = parseInt(location.pathname.split("/").at(-1));
-  const isSingleOrder = !Number.isNaN(id) && location.pathname.includes('orders');
-  const isSingleProduct = !Number.isNaN(id) && location.pathname.includes('products');
+  const isSingleOrder =
+    !Number.isNaN(id) && location.pathname.includes("orders");
+  const isSingleProduct =
+    !Number.isNaN(id) && location.pathname.includes("products");
 
   const pages: ItemProps[] = [
     {
@@ -44,16 +46,17 @@ export const Sidebar = () => {
     },
   ];
 
-  const currentPage = !isSingleOrder && !isSingleProduct
-    ? []
-    : [
-        {
-          selected: true,
-          truncateText: true,
-          label: `#${id}`,
-          icon: isSingleProduct ? ProductsMinor : OrdersMinor,
-        },
-      ];
+  const currentPage =
+    !isSingleOrder && !isSingleProduct
+      ? []
+      : [
+          {
+            selected: true,
+            truncateText: true,
+            label: `#${id}`,
+            icon: isSingleProduct ? ProductsMinor : OrdersMinor,
+          },
+        ];
 
   return (
     <Frame>
@@ -64,7 +67,7 @@ export const Sidebar = () => {
             <Navigation.Section title={"Opened order"} items={currentPage} />
           )}
           {isSingleProduct && (
-              <Navigation.Section title={"Opened product"} items={currentPage} />
+            <Navigation.Section title={"Opened product"} items={currentPage} />
           )}
         </Navigation>
       </Box>

@@ -1,6 +1,9 @@
-import React, {useCallback, useEffect, useState} from "react";
-import {NonEmptyArray} from "@shopify/polaris/build/ts/src/types";
-import {IndexTableHeading, IndexTableSortDirection} from "@shopify/polaris/build/ts/src/components/IndexTable";
+import React, { useCallback, useEffect, useState } from "react";
+import { NonEmptyArray } from "@shopify/polaris/build/ts/src/types";
+import {
+  IndexTableHeading,
+  IndexTableSortDirection,
+} from "@shopify/polaris/build/ts/src/components/IndexTable";
 import {
   ActionListItemDescriptor,
   Avatar,
@@ -20,17 +23,21 @@ import {
   Tooltip,
   useSetIndexFiltersMode,
 } from "@shopify/polaris";
-import {Link} from "react-router-dom";
+import { Link } from "react-router-dom";
 import "./style.css";
-import {EditMinor, ViewMinor} from "@shopify/polaris-icons";
-import {E_SORT_PRODUCTS, E_STATUS_PRODUCTS, I_ProductsGetDto} from "../../graphql/products/products.interfaces";
-import {DEFAULT_IMAGE} from "../../constants/constants";
-import {capitalize} from "../../utils/capitalize";
-import {openNewTab} from "../../utils/openNewTab";
-import {PopoverWithActionList} from "../../components/Popover/Popover";
-import {getBadgeStatus} from "./SingleProduct/UpdateSingleProduct";
-import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
-import {isEmpty} from "../../utils/isEmpty";
+import { EditMinor, ViewMinor } from "@shopify/polaris-icons";
+import {
+  E_SORT_PRODUCTS,
+  E_STATUS_PRODUCTS,
+  I_ProductsGetDto,
+} from "../../graphql/products/products.interfaces";
+import { DEFAULT_IMAGE } from "../../constants/constants";
+import { capitalize } from "../../utils/capitalize";
+import { openNewTab } from "../../utils/openNewTab";
+import { PopoverWithActionList } from "../../components/Popover/Popover";
+import { getBadgeStatus } from "./SingleProduct/UpdateSingleProduct";
+import { shopifyIdToNumber } from "../../utils/shopifyIdToNumber";
+import { isEmpty } from "../../utils/isEmpty";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "", alignment: "start" },
@@ -61,7 +68,7 @@ function disambiguateLabel(key: string, value: string | any[]): string {
 }
 
 function convertIndexColumnToSort(index: number) {
-  switch (index){
+  switch (index) {
     case 1:
       return E_SORT_PRODUCTS.title;
     case 3:
@@ -74,7 +81,7 @@ function convertIndexColumnToSort(index: number) {
 }
 
 function convertSortToIndexColumn(sort: E_SORT_PRODUCTS) {
-  switch (sort){
+  switch (sort) {
     case E_SORT_PRODUCTS.title:
       return 1;
     case E_SORT_PRODUCTS.inventory:
@@ -86,10 +93,13 @@ function convertSortToIndexColumn(sort: E_SORT_PRODUCTS) {
   }
 }
 
-
 interface I_Props {
-  data: { allData: any; dataApps: any; dataMarkets: any; };
-  loadings: { allDataLoading: boolean; dataAppsLoading: boolean; dataMarketsLoading: boolean; };
+  data: { allData: any; dataApps: any; dataMarkets: any };
+  loadings: {
+    allDataLoading: boolean;
+    dataAppsLoading: boolean;
+    dataMarketsLoading: boolean;
+  };
   onRequest: (options: I_ProductsGetDto) => void;
   isRefetching: boolean;
 }
@@ -128,20 +138,26 @@ function handleStorageItems() {
   }
 }
 
-const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => {
+const ProductsTable = ({
+  data,
+  loadings,
+  onRequest,
+  isRefetching,
+}: I_Props) => {
   const [itemStrings, setItemStrings] = useState(["All"]);
   const [storage, setStorage] = useState<I_Storage[]>([DEFAULT_ITEM]);
   const { nodes, pageInfo } = data?.allData?.data?.products ?? {
     nodes: undefined,
     pageInfo: undefined,
   };
-  const [sort, setSort] = useState<{column: number, sort: "ascending" | "descending"}>(undefined)
-  const [vendor, setVendor] = useState("")
-  const [tagged, setTagged] = useState("")
-  const [type, setType] = useState("")
-  const [status, setStatus] = useState<string[] | undefined>(
-      undefined
-  );
+  const [sort, setSort] = useState<{
+    column: number;
+    sort: "ascending" | "descending";
+  }>(undefined);
+  const [vendor, setVendor] = useState("");
+  const [tagged, setTagged] = useState("");
+  const [type, setType] = useState("");
+  const [status, setStatus] = useState<string[] | undefined>(undefined);
   const [selected, setSelected] = useState(0);
   const [cursor, setCursor] = useState<
     { cursor: string; variant: "before" | "after" } | undefined
@@ -261,7 +277,7 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
         tagged,
         type,
         vendor,
-        status
+        status,
       } as I_Storage);
       return prevStorage;
     });
@@ -327,7 +343,7 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
         status,
         vendor,
         type,
-        tagged
+        tagged,
       } as I_Storage);
       return prevStorage;
     });
@@ -335,8 +351,11 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
   };
 
   const handleSort = (e: string[]) => {
-    const arr = e[0].split(' ');
-    setSort({column: convertSortToIndexColumn(arr[0] as E_SORT_PRODUCTS), sort: arr[1] === 'asc' ? 'ascending' : 'descending'});
+    const arr = e[0].split(" ");
+    setSort({
+      column: convertSortToIndexColumn(arr[0] as E_SORT_PRODUCTS),
+      sort: arr[1] === "asc" ? "ascending" : "descending",
+    });
     setSortSelected(e);
 
     setStorage((prev) => {
@@ -395,20 +414,17 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
     []
   );
   const handleChangeVendor = useCallback(
-      (value: string) => setVendor(value),
-      []
+    (value: string) => setVendor(value),
+    []
   );
-  const handleChangeType = useCallback(
-      (value: string) => setType(value),
-      []
-  );
+  const handleChangeType = useCallback((value: string) => setType(value), []);
   const handleChangeTagged = useCallback(
-      (value: string) => setTagged(value),
-      []
+    (value: string) => setTagged(value),
+    []
   );
   const handleChangeStatus = useCallback(
-      (value: string[]) => setStatus(value),
-      []
+    (value: string[]) => setStatus(value),
+    []
   );
   const handleQueryValueRemove = useCallback(() => setQueryValue(""), []);
   const handleTypeValueRemove = useCallback(() => setType(""), []);
@@ -426,7 +442,7 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
     handleStatusValueRemove,
     handleTypeValueRemove,
     handleVendorValueRemove,
-    handleTaggedValueRemove
+    handleTaggedValueRemove,
   ]);
 
   const filters: any = [
@@ -438,7 +454,8 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
           label=""
           value={vendor || ""}
           onChange={handleChangeVendor}
-         autoComplete={"off"}/>
+          autoComplete={"off"}
+        />
       ),
       shortcut: true,
     },
@@ -446,11 +463,12 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
       key: "tagged",
       label: "Tagged with",
       filter: (
-          <TextField
-              label=""
-              value={tagged || ""}
-              onChange={handleChangeTagged}
-              autoComplete={"off"}/>
+        <TextField
+          label=""
+          value={tagged || ""}
+          onChange={handleChangeTagged}
+          autoComplete={"off"}
+        />
       ),
       shortcut: true,
     },
@@ -458,11 +476,12 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
       key: "type",
       label: "Product type",
       filter: (
-          <TextField
-              label=""
-              value={type || ""}
-              onChange={handleChangeType}
-              autoComplete={"off"}/>
+        <TextField
+          label=""
+          value={type || ""}
+          onChange={handleChangeType}
+          autoComplete={"off"}
+        />
       ),
       shortcut: true,
     },
@@ -470,17 +489,20 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
       key: "status",
       label: "Status like",
       filter: (
-          <ChoiceList
-              title="Status"
-              titleHidden
-              choices={[
-                { label: E_STATUS_PRODUCTS.active, value: E_STATUS_PRODUCTS.active },
-                { label: E_STATUS_PRODUCTS.draft, value: E_STATUS_PRODUCTS.draft },
-              ]}
-              selected={status || []}
-              onChange={handleChangeStatus}
-              allowMultiple
-          />
+        <ChoiceList
+          title="Status"
+          titleHidden
+          choices={[
+            {
+              label: E_STATUS_PRODUCTS.active,
+              value: E_STATUS_PRODUCTS.active,
+            },
+            { label: E_STATUS_PRODUCTS.draft, value: E_STATUS_PRODUCTS.draft },
+          ]}
+          selected={status || []}
+          onChange={handleChangeStatus}
+          allowMultiple
+        />
       ),
       shortcut: true,
     },
@@ -526,34 +548,40 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
   };
 
   const findAppsById = (id: string): ActionListItemDescriptor[] => {
-    if(!data.dataApps)
-      return [];
+    if (!data.dataApps) return [];
 
-    const apps = data.dataApps?.data?.products?.nodes?.find((n:any)=>n?.id === id)
-        ?.channelPublications?.nodes ?? []
-
-    return apps
-        .map((m: any) => {
-          const app = m.publication;
-          const result: ActionListItemDescriptor = {active: true, variant: "menu", content: app.name}
-          return result;
-        });
-  }
-
-  const findMarketsById = (id: string):  ActionListItemDescriptor[] => {
-    if(!data.dataMarkets)
-      return [];
-
-    const markets = data.dataMarkets?.data?.products?.nodes?.find((n:any)=>n?.id === id)
+    const apps =
+      data.dataApps?.data?.products?.nodes?.find((n: any) => n?.id === id)
         ?.channelPublications?.nodes ?? [];
 
-    return markets
-        .map((m: any) => {
-          const market = m.publication.catalog.markets.nodes[0];
-          const result: ActionListItemDescriptor = {active: market.enabled, variant: "menu", content: market.name}
-          return result;
-        });
-  }
+    return apps.map((m: any) => {
+      const app = m.publication;
+      const result: ActionListItemDescriptor = {
+        active: true,
+        variant: "menu",
+        content: app.name,
+      };
+      return result;
+    });
+  };
+
+  const findMarketsById = (id: string): ActionListItemDescriptor[] => {
+    if (!data.dataMarkets) return [];
+
+    const markets =
+      data.dataMarkets?.data?.products?.nodes?.find((n: any) => n?.id === id)
+        ?.channelPublications?.nodes ?? [];
+
+    return markets.map((m: any) => {
+      const market = m.publication.catalog.markets.nodes[0];
+      const result: ActionListItemDescriptor = {
+        active: market.enabled,
+        variant: "menu",
+        content: market.name,
+      };
+      return result;
+    });
+  };
 
   const rowMarkup = useCallback(() => {
     if (!data || nodes?.length === 0)
@@ -575,18 +603,25 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
       const markets = findMarketsById(p.id);
 
       return (
-        <IndexTable.Row id={p.id} key={p.id} position={index} >
+        <IndexTable.Row id={p.id} key={p.id} position={index}>
           <IndexTable.Cell>
-            <Avatar source={p?.featuredImage?.url ?? DEFAULT_IMAGE}/>
+            <Avatar source={p?.featuredImage?.url ?? DEFAULT_IMAGE} />
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text variant="bodyMd" fontWeight="bold" as="span">
               <HorizontalStack gap={"5"} blockAlign={"center"}>
-              <Link to={`/products/${shopifyIdToNumber(p.id)}`}>{p.title}</Link>
+                <Link to={`/products/${shopifyIdToNumber(p.id)}`}>
+                  {p.title}
+                </Link>
                 <span className={"view_icon"}>
                   <Tooltip content={"Preview on Online Store"}>
-                    <Text as={'span'}>
-                      <ViewMinor height={"20"} display={"flex"} width={"20"} onClick={()=>openNewTab(p?.onlineStorePreviewUrl)}/>
+                    <Text as={"span"}>
+                      <ViewMinor
+                        height={"20"}
+                        display={"flex"}
+                        width={"20"}
+                        onClick={() => openNewTab(p?.onlineStorePreviewUrl)}
+                      />
                     </Text>
                   </Tooltip>
                 </span>
@@ -595,26 +630,48 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"start"}>
-              <Badge status={getBadgeStatus(p.status)}>{capitalize(p.status)}</Badge>
+              <Badge status={getBadgeStatus(p.status)}>
+                {capitalize(p.status)}
+              </Badge>
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
-            <Text as={"h3"} color={p?.tracksInventory && p?.totalInventory < 0 ? 'critical' : 'subdued'} alignment={"start"}>
-              {p?.tracksInventory ? `${p?.totalInventory} in stock` : 'Inventory not tracked'}
+            <Text
+              as={"h3"}
+              color={
+                p?.tracksInventory && p?.totalInventory < 0
+                  ? "critical"
+                  : "subdued"
+              }
+              alignment={"start"}
+            >
+              {p?.tracksInventory
+                ? `${p?.totalInventory} in stock`
+                : "Inventory not tracked"}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              {loadings.dataAppsLoading ? <Spinner/> :
-                  <PopoverWithActionList items={apps} text={apps?.length.toString()}/>
-              }
+              {loadings.dataAppsLoading ? (
+                <Spinner />
+              ) : (
+                <PopoverWithActionList
+                  items={apps}
+                  text={apps?.length.toString()}
+                />
+              )}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
             <Text as={"h3"} alignment={"center"}>
-              {loadings.dataMarketsLoading ? <Spinner/> :
-                <PopoverWithActionList items={markets} text={markets?.length.toString()}/>
-              }
+              {loadings.dataMarketsLoading ? (
+                <Spinner />
+              ) : (
+                <PopoverWithActionList
+                  items={markets}
+                  text={markets?.length.toString()}
+                />
+              )}
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>
@@ -643,12 +700,8 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
     if (type) query.push(`product_type:${type}*`);
     if (tagged) query.push(`tag:${tagged}*`);
     if (status?.length)
-      query.push(`(${status.map(s=>`status:${s}`).join(' OR ')})`)
+      query.push(`(${status.map((s) => `status:${s}`).join(" OR ")})`);
 
-    console.log( {first: cursor?.variant === "after" || !cursor ? 10 : undefined,
-        last: cursor?.variant === "before" ? 10 : undefined,
-        after: cursor?.variant === "after" ? cursor.cursor : undefined,
-        before: cursor?.variant === "before" ? cursor.cursor : undefined,})
     return {
       sort: _sortData.at(0),
       reverse: _sortData.at(-1) !== "asc",
@@ -658,7 +711,16 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
       before: cursor?.variant === "before" ? cursor.cursor : undefined,
       query: query.length > 0 ? query.join(" ") : undefined,
     } as I_ProductsGetDto;
-  }, [sortSelected, queryValue, cursor, selected, vendor, type, status, tagged]);
+  }, [
+    sortSelected,
+    queryValue,
+    cursor,
+    selected,
+    vendor,
+    type,
+    status,
+    tagged,
+  ]);
 
   const handleNext = () => {
     setCursor({ cursor: pageInfo?.endCursor, variant: "after" });
@@ -669,9 +731,13 @@ const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => 
   };
 
   const onSort = (headingIndex: number, direction: IndexTableSortDirection) => {
-    setSort({column: headingIndex, sort: direction});
-    setSortSelected([`${convertIndexColumnToSort(headingIndex)} ${direction === 'ascending' ? 'asc' : 'desc'}`]);
-  }
+    setSort({ column: headingIndex, sort: direction });
+    setSortSelected([
+      `${convertIndexColumnToSort(headingIndex)} ${
+        direction === "ascending" ? "asc" : "desc"
+      }`,
+    ]);
+  };
 
   return (
     <Frame>
