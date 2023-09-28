@@ -39,7 +39,7 @@ export const DuplicateModal = ({
 
   const [selectedDetails, setSelectedDetails] = useState<string[]>([]);
   const [newTitle, setNewTitle] = useState<string>(`Copy of ${title}`);
-  const [errors, setErrors] = useState(null);
+  const [errors, setErrors] = useState<{[p: string]: {message: string}}>(null);
   const [newStatus, setNewStatus] = useState<string[]>([
     status === "ACTIVE" ? "ACTIVE" : "DRAFT",
   ]);
@@ -104,10 +104,22 @@ export const DuplicateModal = ({
   }, [newTitle, newStatus]);
 
   useEffect(() => {
-    if (errors) {
-      setErrors(null);
+    if (errors && errors?.title) {
+      setErrors((prev)=>{
+        const {title, ...rest} = prev;
+        return rest;
+      });
     }
-  }, [newTitle, newStatus, selectedDetails]);
+  }, [newTitle]);
+
+  useEffect(() => {
+    if (errors && errors?.status) {
+      setErrors((prev)=>{
+        const {status, ...rest} = prev;
+        return rest;
+      });
+    }
+  }, [newStatus]);
 
   return (
     <CustomModal

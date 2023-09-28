@@ -53,7 +53,7 @@ export const ProductContent = ({ product, refetch, isCreate }: I_Props) => {
     descriptionHtml: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState(null);
+  const [errors, setErrors] = useState<{[p: string]: {message: string}}>(null);
   const { show: showToast } = useToast();
   const [unArchiveModalOpened, setUnArchiveModalOpened] = useState(false);
   const [archiveModalOpened, setArchiveModalOpened] = useState(false);
@@ -133,6 +133,24 @@ export const ProductContent = ({ product, refetch, isCreate }: I_Props) => {
       initialValues?.status !== status
     );
   }, [status, title, description, initialValues]);
+
+  useEffect(() => {
+    if (errors && errors?.title) {
+      setErrors((prev)=>{
+        const {title, ...rest} = prev;
+        return rest;
+      });
+    }
+  }, [title]);
+
+  useEffect(() => {
+    if (errors && errors?.status) {
+      setErrors((prev)=>{
+        const {status, ...rest} = prev;
+        return rest;
+      });
+    }
+  }, [status]);
 
   const handleSave = useCallback(async () => {
     setIsLoading(true);
