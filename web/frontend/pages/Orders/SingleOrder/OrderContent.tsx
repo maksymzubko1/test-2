@@ -1,4 +1,4 @@
-import React, {useCallback} from "react";
+import React, {useCallback, useId} from "react";
 import { getOrderDetails } from "../../../utils/orderDetails";
 import {
   Badge,
@@ -63,11 +63,12 @@ export const OrderContent = ({ order }: I_Props) => {
             {orderItems?.map((i: any) => {
               const price = i.originalUnitPriceSet.shopMoney.amount;
               const money = i.originalTotalSet.shopMoney;
-              const product_id = shopifyIdToNumber(i.product.id);
+              const product_id = shopifyIdToNumber(i.product?.id);
+              const key = useId();
 
               return (
                 <Grid
-                  key={`order-item-grid-${product_id}`}
+                  key={`order-item-grid-${key}`}
                   columns={{ xl: 12, lg: 12, md: 6, sm: 6 }}
                 >
                   <Grid.Cell columnSpan={{ xl: 9, lg: 9, md: 4, sm: 4 }}>
@@ -78,12 +79,12 @@ export const OrderContent = ({ order }: I_Props) => {
                         source={order.image?.url ?? DEFAULT_IMAGE}
                       />
                       <Text as={"p"} variant={"bodyLg"}>
-                        <Link
+                        {isNaN(product_id) ? i.title : <Link
                           url={`${DEFAULT_URL_SHOP}/products/${product_id}`}
                           target={"_blank"}
                         >
                           {i.title}
-                        </Link>
+                        </Link>}
                       </Text>
                     </HorizontalStack>
                   </Grid.Cell>

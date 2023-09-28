@@ -26,50 +26,19 @@ import { Link } from "react-router-dom";
 import "./style.module.css";
 import { useToast } from "@shopify/app-bridge-react";
 import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
+import {queryOrdersMonthGet, queryTop5OrdersGet} from "./requests";
 
 function useOrders() {
   const fetch = useAuthenticatedFetch();
   return useQuery(["orders"], async () => {
-    const nowDate = new Date();
-    const body = {
-      query: GET_ORDERS_QUERY,
-      params: {
-        sort: E_SORT_ORDERS.createdAt,
-        first: 50,
-        query: `createdAt:=${nowDate.getFullYear()}-${nowDate.getMonth()}`,
-      },
-    } as I_Default<I_OrdersGetDto>;
-
-    const res = await fetch("/api/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      throw new Error(await res.text());
-    }
-    // @ts-ignore
-    return (await res.json()).body?.data?.orders?.nodes ?? [];
+    return await queryOrdersMonthGet(fetch);
   });
 }
 
 function useTopOrders() {
   const fetch = useAuthenticatedFetch();
   return useQuery(["top_orders"], async () => {
-    const body = {
-      query: GET_ORDERS_TOP5,
-    } as I_Default<I_OrdersGetDto>;
-
-    const res = await fetch("/api/graphql", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      throw new Error(await res.text());
-    }
-    // @ts-ignore
-    return (await res.json()).body?.data?.orders?.nodes ?? [];
+    return await queryTop5OrdersGet(fetch);
   });
 }
 

@@ -27,6 +27,7 @@ import moment from "moment";
 import { FinancialStatus } from "../../components/FinancialStatus/FinancialStatus";
 import { EditMinor } from "@shopify/polaris-icons";
 import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
+import {isEmpty} from "../../utils/isEmpty";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "Order", alignment: "start" },
@@ -51,14 +52,6 @@ function disambiguateLabel(key: string, value: string | any[]): string {
         .join(", ")}`;
     default:
       return value as string;
-  }
-}
-
-function isEmpty(value: string | string[]): boolean {
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  } else {
-    return value === "" || value == null;
   }
 }
 
