@@ -53,7 +53,9 @@ export const ProductContent = ({ product, refetch, isCreate }: I_Props) => {
     descriptionHtml: "",
   });
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{[p: string]: {message: string}}>(null);
+  const [errors, setErrors] = useState<{ [p: string]: { message: string } }>(
+    null
+  );
   const { show: showToast } = useToast();
   const [unArchiveModalOpened, setUnArchiveModalOpened] = useState(false);
   const [archiveModalOpened, setArchiveModalOpened] = useState(false);
@@ -136,8 +138,8 @@ export const ProductContent = ({ product, refetch, isCreate }: I_Props) => {
 
   useEffect(() => {
     if (errors && errors?.title) {
-      setErrors((prev)=>{
-        const {title, ...rest} = prev;
+      setErrors((prev) => {
+        const { title, ...rest } = prev;
         return rest;
       });
     }
@@ -145,8 +147,8 @@ export const ProductContent = ({ product, refetch, isCreate }: I_Props) => {
 
   useEffect(() => {
     if (errors && errors?.status) {
-      setErrors((prev)=>{
-        const {status, ...rest} = prev;
+      setErrors((prev) => {
+        const { status, ...rest } = prev;
         return rest;
       });
     }
