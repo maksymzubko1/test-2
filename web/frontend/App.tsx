@@ -6,8 +6,9 @@ import {BrowserRouter} from "react-router-dom";
 import Routes from "./Routes";
 import ErrorBoundaryView from "./components/ErrorView";
 import {GlobalLoadingIndicator} from "./components/GlobalLoadingIndicator";
-import {ShopContextProvider} from "./hooks";
+import {ShopContextProvider, useAuthenticatedFetch} from "./hooks";
 import {AppBridgeProvider, PolarisProvider, QueryProvider} from "./providers";
+import {I_ProductsGetDto} from "./graphql/products/products.interfaces";
 
 export default function App() {
     return (

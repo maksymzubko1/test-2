@@ -22,6 +22,23 @@ export interface I_MutationProductArchive {
   }
 }
 
+export interface I_MutationProductUpdate {
+  product: {
+    id: string;
+    status: E_STATUS_PRODUCTS;
+    title: string;
+    descriptionHtml: string;
+  }
+}
+
+export interface I_MutationProductCreate {
+  product: {
+    status: E_STATUS_PRODUCTS;
+    title: string;
+    descriptionHtml: string;
+  }
+}
+
 export interface I_MutationProductDelete {
   product: {
     id: string;

@@ -18,6 +18,7 @@ import { ViewMinor } from "@shopify/polaris-icons";
 import moment from "moment";
 import {useShop} from "../../../hooks";
 import {openNewTab} from "../../../utils/openNewTab";
+import {shopifyIdToNumber} from "../../../utils/shopifyIdToNumber";
 
 interface I_Props {
   order: any;
@@ -62,7 +63,7 @@ export const OrderContent = ({ order }: I_Props) => {
             {orderItems?.map((i: any) => {
               const price = i.originalUnitPriceSet.shopMoney.amount;
               const money = i.originalTotalSet.shopMoney;
-              const product_id = i.product.id.split("/").at(-1);
+              const product_id = shopifyIdToNumber(i.product.id);
 
               return (
                 <Grid

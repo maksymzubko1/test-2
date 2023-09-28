@@ -28,7 +28,9 @@ import {DEFAULT_IMAGE} from "../../constants/constants";
 import {capitalize} from "../../utils/capitalize";
 import {openNewTab} from "../../utils/openNewTab";
 import {PopoverWithActionList} from "../../components/Popover/Popover";
-import {getBadgeStatus} from "./SingleProduct/SingleProduct";
+import {getBadgeStatus} from "./SingleProduct/UpdateSingleProduct";
+import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
+import {isEmpty} from "../../utils/isEmpty";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "", alignment: "start" },
@@ -59,7 +61,6 @@ function disambiguateLabel(key: string, value: string | any[]): string {
 }
 
 function convertIndexColumnToSort(index: number) {
-  console.log(index)
   switch (index){
     case 1:
       return E_SORT_PRODUCTS.title;
@@ -85,18 +86,12 @@ function convertSortToIndexColumn(sort: E_SORT_PRODUCTS) {
   }
 }
 
-function isEmpty(value: string | string[]): boolean {
-  if (Array.isArray(value)) {
-    return value.length === 0;
-  } else {
-    return value === "" || value == null;
-  }
-}
 
 interface I_Props {
   data: { allData: any; dataApps: any; dataMarkets: any; };
   loadings: { allDataLoading: boolean; dataAppsLoading: boolean; dataMarketsLoading: boolean; };
   onRequest: (options: I_ProductsGetDto) => void;
+  isRefetching: boolean;
 }
 
 interface I_Storage {
@@ -133,7 +128,7 @@ function handleStorageItems() {
   }
 }
 
-const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
+const ProductsTable = ({ data, loadings, onRequest, isRefetching }: I_Props) => {
   const [itemStrings, setItemStrings] = useState(["All"]);
   const [storage, setStorage] = useState<I_Storage[]>([DEFAULT_ITEM]);
   const { nodes, pageInfo } = data?.allData?.data?.products ?? {
@@ -537,13 +532,12 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     const apps = data.dataApps?.data?.products?.nodes?.find((n:any)=>n?.id === id)
         ?.channelPublications?.nodes ?? []
 
-    const preparedApps = apps
-        .map((m:any)=>{
+    return apps
+        .map((m: any) => {
           const app = m.publication;
           const result: ActionListItemDescriptor = {active: true, variant: "menu", content: app.name}
           return result;
-        })
-    return preparedApps;
+        });
   }
 
   const findMarketsById = (id: string):  ActionListItemDescriptor[] => {
@@ -553,13 +547,12 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     const markets = data.dataMarkets?.data?.products?.nodes?.find((n:any)=>n?.id === id)
         ?.channelPublications?.nodes ?? [];
 
-    const preparedMarkets = markets
-        .map((m:any)=>{
+    return markets
+        .map((m: any) => {
           const market = m.publication.catalog.markets.nodes[0];
           const result: ActionListItemDescriptor = {active: market.enabled, variant: "menu", content: market.name}
           return result;
-        })
-    return preparedMarkets;
+        });
   }
 
   const rowMarkup = useCallback(() => {
@@ -589,7 +582,7 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
           <IndexTable.Cell>
             <Text variant="bodyMd" fontWeight="bold" as="span">
               <HorizontalStack gap={"5"} blockAlign={"center"}>
-              <Link to={`/products/${p.id.split("/").at(-1)}`}>{p.title}</Link>
+              <Link to={`/products/${shopifyIdToNumber(p.id)}`}>{p.title}</Link>
                 <span className={"view_icon"}>
                   <Tooltip content={"Preview on Online Store"}>
                     <Text as={'span'}>
@@ -652,6 +645,10 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
     if (status?.length)
       query.push(`(${status.map(s=>`status:${s}`).join(' OR ')})`)
 
+    console.log( {first: cursor?.variant === "after" || !cursor ? 10 : undefined,
+        last: cursor?.variant === "before" ? 10 : undefined,
+        after: cursor?.variant === "after" ? cursor.cursor : undefined,
+        before: cursor?.variant === "before" ? cursor.cursor : undefined,})
     return {
       sort: _sortData.at(0),
       reverse: _sortData.at(-1) !== "asc",
@@ -702,11 +699,11 @@ const ProductsTable = ({ data, loadings, onRequest }: I_Props) => {
           onClearAll={handleFiltersClearAll}
           mode={mode}
           setMode={setMode}
-          loading={loadings.allDataLoading}
+          loading={loadings.allDataLoading || isRefetching}
         />
         <IndexTable
           selectable={false}
-          loading={loadings.allDataLoading}
+          loading={loadings.allDataLoading || isRefetching}
           headings={headings}
           sortDirection={sort?.sort}
           sortColumnIndex={sort?.column}

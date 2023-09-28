@@ -2,7 +2,7 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://sides-volvo-dash-suppliers.trycloudflare.com"
+application_url = "https://storage-clearance-logging-ca.trycloudflare.com"
 embedded = true
 
 [access_scopes]
@@ -12,9 +12,9 @@ use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://sides-volvo-dash-suppliers.trycloudflare.com/auth/callback",
-  "https://sides-volvo-dash-suppliers.trycloudflare.com/auth/shopify/callback",
-  "https://sides-volvo-dash-suppliers.trycloudflare.com/api/auth/callback"
+  "https://storage-clearance-logging-ca.trycloudflare.com/auth/callback",
+  "https://storage-clearance-logging-ca.trycloudflare.com/auth/shopify/callback",
+  "https://storage-clearance-logging-ca.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

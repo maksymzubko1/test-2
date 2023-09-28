@@ -1,3 +1,5 @@
+import {shopifyIdToNumber} from "./shopifyIdToNumber";
+
 export function getOrderDetails(order: any) {
   if (!order) return {};
 
@@ -44,7 +46,7 @@ export function getOrderDetails(order: any) {
   const note = order?.note ?? "";
   const customer = order?.customer
     ? {
-        id: order.customer.id.split("/").at(-1) ?? null,
+        id: shopifyIdToNumber(order.customer.id),
         displayName: order.customer.displayName ?? "",
         email: order.customer?.email,
         phone: order.customer?.phone,
@@ -60,7 +62,7 @@ export function getOrderDetails(order: any) {
       : [];
   const billingAddressMatchesShippingAddress =
     !!order?.billingAddressMatchesShippingAddress;
-  const id = order.id.split("/").at(-1) ?? null;
+  const id = shopifyIdToNumber(order.id) ?? null;
   const customerPaid = order?.transactions
     ? order?.transactions?.reduce(
         (accumulator: number, currentValue: any) =>

@@ -26,6 +26,7 @@ import cl from "./style.module.css";
 import moment from "moment";
 import { FinancialStatus } from "../../components/FinancialStatus/FinancialStatus";
 import { EditMinor } from "@shopify/polaris-icons";
+import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
 
 const headings: NonEmptyArray<IndexTableHeading> = [
   { title: "Order", alignment: "start" },
@@ -439,7 +440,7 @@ const OrdersTable = ({ data, isLoading, onRequest }: I_Props) => {
         <IndexTable.Row id={o.id} key={o.id} position={index}>
           <IndexTable.Cell>
             <Text variant="bodyMd" fontWeight="bold" as="span">
-              <Link to={`/orders/${o.id.split("/").at(-1)}`}>{o.name}</Link>
+              <Link to={`/orders/${shopifyIdToNumber(o.id)}`}>{o.name}</Link>
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>

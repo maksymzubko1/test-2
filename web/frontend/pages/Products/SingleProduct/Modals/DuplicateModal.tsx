@@ -1,12 +1,13 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Box, ChoiceList, Divider, Frame, Modal, TextField, Toast, VerticalStack} from "@shopify/polaris";
+import {ChoiceList, Divider, Modal, TextField, VerticalStack} from "@shopify/polaris";
 import {parseValidationResult, validateStatus, validateTitle} from "../../validators";
-import {E_STATUS_PRODUCTS, I_MutationProductDuplicate} from "../../../../graphql/products/products.interfaces";
+import {E_STATUS_PRODUCTS} from "../../../../graphql/products/products.interfaces";
 import {useNavigate} from "react-router-dom";
-import {DUPLICATE_PRODUCT, GET_PRODUCT} from "../../../../graphql/products/products.graphql";
-import {I_Default} from "../../../../graphql/default.interface";
 import {useAuthenticatedFetch} from "../../../../hooks";
 import {CustomModal} from "../../../../components/Modal/Modal";
+import {shopifyIdToNumber} from "../../../../utils/shopifyIdToNumber";
+import {useToast} from "@shopify/app-bridge-react";
+import {mutationProductDuplicate} from "../../requests";
 
 interface I_Props {
     title: string;
@@ -24,9 +25,13 @@ export const DuplicateModal = ({title, status, id, onClose, opened}: I_Props) =>
     const [newTitle, setNewTitle] = useState<string>(`Copy of ${title}`);
     const [errors, setErrors] = useState(null)
     const [newStatus, setNewStatus] = useState<string[]>([status === 'ACTIVE' ? 'ACTIVE' : 'DRAFT']);
-    const emptyToastProps: any = {content: null};
-    const [toastProps, setToastProps] = useState(emptyToastProps);
     const [isLoading, setIsLoading] = useState(false);
+    const {show: showToast} = useToast();
+
+    useEffect(() => {
+        setNewTitle(`Copy of ${title}`);
+        setNewStatus([status === 'ACTIVE' ? 'ACTIVE' : 'DRAFT'])
+    }, [title, status, id]);
 
     const handleStatus = useCallback(
         (value: string[]) => setNewStatus(value),
@@ -66,46 +71,24 @@ export const DuplicateModal = ({title, status, id, onClose, opened}: I_Props) =>
             return;
         }
 
-        let isError = false;
-
-        const body = {
-            query: DUPLICATE_PRODUCT,
-            params: {
+        try{
+            const data = {
                 productId: `gid://shopify/Product/${id}`,
-                newStatus: newStatus[0],
+                newStatus: newStatus[0] as E_STATUS_PRODUCTS,
                 newTitle,
                 copyImages: selectedDetails.includes('images')
-            },
-        } as I_Default<I_MutationProductDuplicate>;
+            };
+            const response = await mutationProductDuplicate(fetch, data);
+            const productId = response.data.productDuplicate.newProduct.id;
 
-        const response = await fetch("/api/graphql", {
-            method: "POST",
-            headers: {"Content-Type": "application/json"},
-            body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-            // @ts-ignore
-            const body = (await response.json())?.body;
-            if (!body?.data?.productDuplicate?.userErrors?.length) {
-                const id = body.data.productDuplicate.newProduct.id;
-                onClose();
-                navigate(`/products/${id.split("/").at(-1)}`)
-            } else {
-                isError = true;
-            }
-        } else {
-            isError = true;
-        }
-
-        if (isError) {
+            onClose();
+            navigate(`/products/${shopifyIdToNumber(productId)}`)
+        }catch (error){
             // TODO: fix hardcode exception
-            setToastProps({
-                content: "Error during product duplicate",
-            })
+            showToast(`Error during product duplicate`, {isError: true})
+        }finally {
+            setIsLoading(false)
         }
-
-        setIsLoading(false);
     }, [newTitle, newStatus]);
 
     useEffect(() => {
@@ -114,64 +97,53 @@ export const DuplicateModal = ({title, status, id, onClose, opened}: I_Props) =>
         }
     }, [newTitle, newStatus, selectedDetails]);
 
-    const toastMarkup = toastProps.content && (
-        <Toast {...toastProps} error duration={1000} onDismiss={() => setToastProps(emptyToastProps)}/>
-    );
-
     return (
-        <>
-            <CustomModal
-                title={"Duplicate product"}
-                primaryAction={{loading: isLoading, content: 'Duplicate product', onAction: handleSubmit}}
-                secondaryActions={[{disabled: isLoading, content: 'Cancel', onAction: handleClose}]}
-                opened={opened}
-                onClose={onClose}
-            >
-                <Modal.Section>
-                    <VerticalStack gap={"3"}>
-                        <TextField
-                            requiredIndicator
-                            label={"Title"}
-                            autoComplete={"off"}
-                            value={newTitle}
-                            onChange={handleNewTitle}
-                            error={errors?.title?.message}
-                        />
-                        <Divider/>
-                        <ChoiceList
-                            title="Select details to copy. All other details except 3D models and videos will be copied from the original product and any variants."
-                            choices={[
-                                {label: 'Images', value: 'images'}
-                            ]}
-                            allowMultiple
-                            selected={selectedDetails}
-                            onChange={handleSelectedDetails}
-                        />
-                        <Divider/>
-                        <ChoiceList
-                            title="Product status"
-                            choices={[
-                                {
-                                    label: `Set as ${E_STATUS_PRODUCTS.draft.toLowerCase()}`,
-                                    value: E_STATUS_PRODUCTS.draft
-                                },
-                                {
-                                    label: `Set as ${E_STATUS_PRODUCTS.active.toLowerCase()}`,
-                                    value: E_STATUS_PRODUCTS.active
-                                },
-                            ]}
-                            error={errors?.status?.message}
-                            selected={newStatus}
-                            onChange={handleStatus}
-                        />
-                    </VerticalStack>
-                </Modal.Section>
-            </CustomModal>
-            <Box position={"absolute"}>
-                <Frame>
-                    {toastMarkup}
-                </Frame>
-            </Box>
-        </>
+        <CustomModal
+            title={"Duplicate product"}
+            primaryAction={{loading: isLoading, content: 'Duplicate product', onAction: handleSubmit}}
+            secondaryActions={[{disabled: isLoading, content: 'Cancel', onAction: handleClose}]}
+            opened={opened}
+            onClose={onClose}
+        >
+            <Modal.Section>
+                <VerticalStack gap={"3"}>
+                    <TextField
+                        requiredIndicator
+                        label={"Title"}
+                        autoComplete={"off"}
+                        value={newTitle}
+                        onChange={handleNewTitle}
+                        error={errors?.title?.message}
+                    />
+                    <Divider/>
+                    <ChoiceList
+                        title="Select details to copy. All other details except 3D models and videos will be copied from the original product and any variants."
+                        choices={[
+                            {label: 'Images', value: 'images'}
+                        ]}
+                        allowMultiple
+                        selected={selectedDetails}
+                        onChange={handleSelectedDetails}
+                    />
+                    <Divider/>
+                    <ChoiceList
+                        title="Product status"
+                        choices={[
+                            {
+                                label: `Set as ${E_STATUS_PRODUCTS.draft.toLowerCase()}`,
+                                value: E_STATUS_PRODUCTS.draft
+                            },
+                            {
+                                label: `Set as ${E_STATUS_PRODUCTS.active.toLowerCase()}`,
+                                value: E_STATUS_PRODUCTS.active
+                            },
+                        ]}
+                        error={errors?.status?.message}
+                        selected={newStatus}
+                        onChange={handleStatus}
+                    />
+                </VerticalStack>
+            </Modal.Section>
+        </CustomModal>
     );
 };

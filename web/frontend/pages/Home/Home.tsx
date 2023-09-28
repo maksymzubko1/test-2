@@ -25,6 +25,7 @@ import { Link } from "react-router-dom";
 
 import "./style.module.css";
 import { useToast } from "@shopify/app-bridge-react";
+import {shopifyIdToNumber} from "../../utils/shopifyIdToNumber";
 
 function useOrders() {
   const fetch = useAuthenticatedFetch();
@@ -119,7 +120,7 @@ export const Home = () => {
         <IndexTable.Row id={o.id} key={o.id} position={index}>
           <IndexTable.Cell>
             <Text variant="bodyMd" fontWeight="bold" as="span">
-              <Link to={`/orders/${o.id.split("/").at(-1)}`}>{o.name}</Link>
+              <Link to={`/orders/${shopifyIdToNumber(o.id)}`}>{o.name}</Link>
             </Text>
           </IndexTable.Cell>
           <IndexTable.Cell>

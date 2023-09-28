@@ -1,4 +1,5 @@
-export const GET_PRODUCT_APPS = `query getApps(
+export const GET_PRODUCT_APPS = `
+query getApps(
   $sort: ProductSortKeys!
   $query: String
   $after: String
@@ -19,7 +20,7 @@ export const GET_PRODUCT_APPS = `query getApps(
     nodes {
       id
       channelPublications: resourcePublicationsV2(
-        first: $first
+        first: 10,
         onlyPublished: false
         catalogType: APP
       ) {
@@ -56,7 +57,7 @@ export const GET_PRODUCT_MARKETS = `query getMarkets(
     nodes {
       id
       channelPublications: resourcePublicationsV2(
-        first: $first
+        first: 10,
         onlyPublished: false
         catalogType: MARKET
       ) {
@@ -169,6 +170,32 @@ export const DELETE_PRODUCT = `
 mutation deleteProduct($product:ProductDeleteInput!){
   productDelete(input:$product){
     deletedProductId
+    userErrors{
+      field
+      message
+    }
+  }
+}`
+
+export const CREATE_PRODUCT = `
+mutation createProduct($product:ProductInput!){
+  productCreate(input:$product){
+    product{
+      id
+    }
+    userErrors{
+      message
+      field
+    }
+  }
+}`
+
+export const UPDATE_PRODUCT = `
+mutation updateProduct($product:ProductInput!){
+  productUpdate(input:$product){
+    product{
+      id
+    }
     userErrors{
       field
       message
