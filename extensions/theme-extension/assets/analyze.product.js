@@ -3,6 +3,9 @@ document.addEventListener("DOMContentLoaded", (event) => {
     if(location.hostname.includes('shopifypreview.com'))
         return;
 
+    if(!shopId || !productId)
+        return;
+
     // TODO: remove hardcode
     const URL = `https://universal-bridal-education-dv.trycloudflare.com`;
 
