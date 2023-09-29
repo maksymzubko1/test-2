@@ -1,0 +1,16 @@
+<script>
+  const productId = '{{product.id}}';
+  const shopId = '{{shop.domain}}';
+</script>
+
+{% schema %}
+{
+  "name": "Analyzer products",
+  "target": "body",
+  "enabled_on": {
+    "templates": ["product"]
+   },
+  "javascript": "analyze.product.js"
+}
+{% endschema %}
+

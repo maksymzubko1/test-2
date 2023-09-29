@@ -20,6 +20,7 @@ import billingRoutes, {
 import blockRoutes from "./routes/blocks";
 import shopRoutes from "./routes/shop";
 import graphqlRoute from "./routes/graphql";
+import analyzeRoute from "./routes/analyze";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "8081",
@@ -49,11 +50,14 @@ app.post(
 );
 await addUninstallWebhookHandler();
 
+app.use(express.json());
+
 // If you are adding routes outside of the /api path, remember to
 // also add a proxy rule for them in web/client/vite.config.js
 
 // Unauthenticated routes
 app.use("/api/billing", billingUnauthenticatedRoutes);
+app.use("/api/analyze", analyzeRoute);
 
 // All endpoints after this point will require an active session
 app.use("/api/*", shopify.validateAuthenticatedSession());
@@ -74,7 +78,6 @@ app.use("/api/*", (req: Request, res: Response, next: NextFunction) => {
   return next();
 });
 
-app.use(express.json());
 app.use("/api/block", blockRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/billing", billingRoutes);

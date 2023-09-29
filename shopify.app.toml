@@ -2,19 +2,19 @@
 
 name = "test-appka"
 client_id = "b23565df91024902c3ef845b695e2288"
-application_url = "https://storage-clearance-logging-ca.trycloudflare.com"
+application_url = "https://universal-bridal-education-dv.trycloudflare.com"
 embedded = true
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "write_products, write_orders, read_customers, read_publications, read_markets"
+scopes = "write_products, write_orders, read_customers, read_publications, read_markets, read_pixels, write_pixels, read_customer_events"
 use_legacy_install_flow = true
 
 [auth]
 redirect_urls = [
-  "https://storage-clearance-logging-ca.trycloudflare.com/auth/callback",
-  "https://storage-clearance-logging-ca.trycloudflare.com/auth/shopify/callback",
-  "https://storage-clearance-logging-ca.trycloudflare.com/api/auth/callback"
+  "https://universal-bridal-education-dv.trycloudflare.com/auth/callback",
+  "https://universal-bridal-education-dv.trycloudflare.com/auth/shopify/callback",
+  "https://universal-bridal-education-dv.trycloudflare.com/api/auth/callback"
 ]
 
 [webhooks]

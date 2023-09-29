@@ -1,8 +1,8 @@
 import type { ShopDataResponse } from "../../@types/shop";
 import type { Session } from "@shopify/shopify-api";
-import shops from "../prisma/database/shops";
 import shopify from "../shopify";
 import express from "express";
+import {getShop, updateShop} from "../services/shop-services";
 
 const shopRoutes = express.Router();
 
@@ -74,13 +74,9 @@ shopRoutes.get("/info", async (_req, res) => {
     const session: Session = res.locals.shopify.session;
     const { shop } = session;
 
-    const shopInfo = await shops.getShop(shop);
+    const shopInfo = await getShop(shop);
 
-    if (shopInfo) {
-      res.status(200).send(shopInfo);
-    } else {
-      throw new Error(`Error while fetching shopInfo for shop ${shop}`);
-    }
+    res.status(200).send(shopInfo);
   } catch (error) {
     console.log("Failed to process api request:", error);
     res.status(500).send((error as Error).message);
@@ -92,13 +88,9 @@ shopRoutes.post("/update", async (req, res) => {
     const session: Session = res.locals.shopify.session;
     const { shop } = session;
 
-    const shopInfo = await shops.updateShop({ shop, ...req.body });
+    const shopInfo = await updateShop({ shop, ...req.body });
 
-    if (shopInfo) {
-      res.status(200).send(shopInfo);
-    } else {
-      throw new Error(`Error while fetching shopInfo for shop ${shop}`);
-    }
+    res.status(200).send(shopInfo);
   } catch (error) {
     console.log(`Failed to process api request: ${error}`);
     res.status(500).send((error as Error).message);

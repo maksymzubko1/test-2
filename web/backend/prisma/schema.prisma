@@ -19,6 +19,7 @@ model Shop {
   subscribeCount Int           @default(0)
   showOnboarding Boolean       @default(true)
   test           Boolean       @default(false)
+  AnalyzeData    AnalyzeData[]
 
   @@index([shop])
 }
@@ -63,6 +64,19 @@ model Session {
   id      String @id @unique
   shop    String
   session String @db.Text
+
+  @@index([id])
+}
+
+model AnalyzeData {
+  id            Int      @id @default(autoincrement())
+  type          String
+  shop          String
+  Shop          Shop     @relation(fields: [shop], references: [shop], onDelete: Cascade)
+  itemId        String
+  actionCount   Int
+  event         String
+  lastTimestamp DateTime @default(now())
 
   @@index([id])
 }
