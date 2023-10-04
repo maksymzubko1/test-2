@@ -134,6 +134,14 @@ query getProduct($id:ID!){
     descriptionHtml
     onlineStorePreviewUrl
     status
+    productType
+    metafields(first:4) {
+      nodes {
+        id
+        value
+        type
+      }
+    }
     featuredImage {
       url
     }

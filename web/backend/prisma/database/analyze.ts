@@ -5,6 +5,7 @@ export default {
   getAnalyzeData,
   createAnalyzeData,
   updateAnalyzeData,
+  getAnalyzeDataByProduct
 };
 
 async function getAnalyzeData(shop: string, itemId: string, event: string, type: string) {
@@ -14,6 +15,20 @@ async function getAnalyzeData(shop: string, itemId: string, event: string, type:
         shop,
         itemId,
         event,
+        type
+      },
+    });
+  });
+  if (!error) return data;
+  return undefined;
+}
+
+async function getAnalyzeDataByProduct(shop: string, itemId: string, type: string) {
+  const { data, error } = await tryCatch(async () => {
+    return await prisma.analyzeData.findMany({
+      where: {
+        shop,
+        itemId,
         type
       },
     });

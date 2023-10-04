@@ -17,7 +17,7 @@ import {
   UPDATE_PRODUCT,
 } from "../../graphql/products/products.graphql";
 import { I_Default } from "../../graphql/default.interface";
-import { sendRequest, T_Fetch } from "../../utils/sendRequest";
+import {sendRequest, sendRequestGet, T_Fetch} from "../../utils/sendRequest";
 
 export async function queryProductsMarketsGet(
   fetch: T_Fetch,
@@ -55,6 +55,10 @@ export async function queryProductGet(fetch: T_Fetch, id: number) {
     params: { id: `gid://shopify/Product/${id}` },
   } as I_Default<{ id: string }>;
   return await sendRequest(fetch, JSON.stringify(body));
+}
+
+export async function getProductAnalyzeData(fetch: T_Fetch, id: number) {
+  return await sendRequestGet(fetch, `analyze/${id}`);
 }
 
 export async function mutationProductCreate(

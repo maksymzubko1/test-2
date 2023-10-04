@@ -15,3 +15,12 @@ export async function sendRequest(fetch: T_Fetch, body: string) {
   // @ts-ignore
   return (await response.json()).body;
 }
+
+export async function sendRequestGet(fetch: T_Fetch, params: string) {
+  const response = await fetch(`/api/${params}`, {method: 'GET'});
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+  // @ts-ignore
+  return (await response.json());
+}

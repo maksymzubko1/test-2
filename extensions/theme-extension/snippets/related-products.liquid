@@ -1,0 +1,21 @@
+<div class="related-products-wrapper">
+  {%assign related_products = product.metafields.custom.sub_items.value %}
+   {% if related_products %}
+    <h3>You might also like:</h3>
+     <div class = "related-product-list">
+      {% for related_product in related_products limit: 4 %}
+        <div class = "related-product">
+         <a href = "{{shop.url | append: "/products/" | append: related_product.handle }}"> 
+         <div class = "related-product-image">
+           <img src = "{{related_product.featured_image | img_url: 'medium' }}" />
+          </div>
+         <div class = "related-product-name">{{related_product.title}}</div>
+         <div class = "related-product-price">{{related_product.price | money}}</div>
+         </a>
+         {% render 'buy-buttons', product: related_product, product_form_id: product_form_id, section_id: section.id, show_pickup_availability: true %}
+        </div>
+      {% endfor %}
+     </div>
+   {%endif%}
+</div>
+<div class = "related-products-dummy"></div>

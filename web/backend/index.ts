@@ -20,7 +20,7 @@ import billingRoutes, {
 import blockRoutes from "./routes/blocks";
 import shopRoutes from "./routes/shop";
 import graphqlRoute from "./routes/graphql";
-import analyzeRoute from "./routes/analyze";
+import {analyzeRoute, analyzeRouteProtected} from "./routes/analyze";
 
 const PORT = parseInt(
   process.env.BACKEND_PORT || process.env.PORT || "8081",
@@ -82,6 +82,7 @@ app.use("/api/block", blockRoutes);
 app.use("/api/shop", shopRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/graphql", graphqlRoute);
+app.use("/api/analyze", analyzeRouteProtected);
 
 app.use(shopify.cspHeaders());
 app.use(

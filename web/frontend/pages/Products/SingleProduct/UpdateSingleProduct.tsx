@@ -10,7 +10,7 @@ import {
   Text,
 } from "@shopify/polaris";
 import { useLocation, useNavigate } from "react-router-dom";
-import { useAuthenticatedFetch } from "../../../hooks";
+import {useAuthenticatedFetch, useShop} from "../../../hooks";
 import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@shopify/app-bridge-react";
 import { ProductContent } from "./ProductContent";
@@ -19,13 +19,21 @@ import { openNewTab } from "../../../utils/openNewTab";
 import { Status } from "@shopify/polaris/build/ts/src/components/Badge/types";
 import { E_STATUS_PRODUCTS } from "../../../graphql/products/products.interfaces";
 import { DuplicateModal } from "./Modals/DuplicateModal";
-import { queryProductGet } from "../requests";
+import {getProductAnalyzeData, queryProductGet} from "../requests";
 
 function useGetProduct(id: number) {
   const fetch = useAuthenticatedFetch();
 
-  return useQuery([id], async () => {
+  return useQuery(['product', id], async () => {
     return await queryProductGet(fetch, id);
+  });
+}
+
+function useGetProductAnalyzeData(id: number) {
+  const fetch = useAuthenticatedFetch();
+
+  return useQuery(['analyze', id], async () => {
+    return await getProductAnalyzeData(fetch, id);
   });
 }
 
@@ -64,6 +72,8 @@ export const UpdateSingleProduct = () => {
     );
 
   const { data, isLoading, isError, refetch } = useGetProduct(id);
+  const { data:analyzeData } = useGetProductAnalyzeData(id);
+
   const { show: showToast } = useToast();
 
   useEffect(() => {
@@ -125,7 +135,7 @@ export const UpdateSingleProduct = () => {
         </Text>
       )}
       {!isLoading && !(isError || !data?.data?.product) && (
-        <ProductContent product={product} refetch={refetch} />
+        <ProductContent product={product} refetch={refetch} analyze={analyzeData}/>
       )}
       {product?.title && (
         <DuplicateModal

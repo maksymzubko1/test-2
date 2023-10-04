@@ -10,3 +10,14 @@ export async function saveAnalyzeProduct(shop: string, productId: string, event:
     await analyze.createAnalyzeData({shop, event, actionCount: 1, type, itemId: productId});
   }
 }
+
+export async function getAnalyzeByProduct(shop: string, productId: string){
+  const type = 'product';
+  const analyzeData = await analyze.getAnalyzeDataByProduct(shop, productId, type);
+
+  if (analyzeData) {
+    return analyzeData;
+  } else {
+    return [];
+  }
+}

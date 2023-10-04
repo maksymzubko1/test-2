@@ -7,9 +7,11 @@ document.addEventListener("DOMContentLoaded", (event) => {
         return;
 
     // TODO: remove hardcode
-    const URL = `https://universal-bridal-education-dv.trycloudflare.com`;
+    const URL = `https://german-motivation-consisting-neil.trycloudflare.com`;
 
-    const addToCartButton = document.getElementsByClassName('product-form__submit').item(0);
+    const addToCartForms = [...document.getElementsByTagName('form')]
+        .filter(f=>f.action.includes('/cart/add'));
+
     const buyButton = document.getElementsByClassName('shopify-payment-button').item(0);
 
     fetch(`${URL}/api/analyze`, {
@@ -18,13 +20,15 @@ document.addEventListener("DOMContentLoaded", (event) => {
         headers: {'Content-Type':'application/json'},
     });
 
-    if(addToCartButton){
-        addToCartButton.addEventListener('click', () => {
-            fetch(`${URL}/api/analyze`, {
-                method: 'POST',
-                body: JSON.stringify({shop: shopId ?? "", itemId: productId ?? "", type: 'product', event: 'product_added_to_cart'}),
-                headers: {'Content-Type':'application/json'},
-            });
+    if(addToCartForms && addToCartForms.length){
+        addToCartForms.forEach(f=>{
+            f.addEventListener('submit', () => {
+                fetch(`${URL}/api/analyze`, {
+                    method: 'POST',
+                    body: JSON.stringify({shop: shopId ?? "", itemId: productId ?? "", type: 'product', event: 'product_added_to_cart'}),
+                    headers: {'Content-Type':'application/json'},
+                });
+            })
         })
     }
 
